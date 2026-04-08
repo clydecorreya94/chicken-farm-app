@@ -90,16 +90,38 @@ function StyleInjector() {
   return null;
 }
 
-
 // ─── Data ─────────────────────────────────────────────────────────────────────
+// Feed schedule for the app's current BV380 programme.
 const FEED_SCHEDULE = [
-  { minDay:1,   maxDay:7,   phase:"Pre-Starter", feedType:"Pre-Starter Crumble",          proteinPct:"22–24%", gramsPerBird:[10,15],   waterMl:[200,220],  freq:"4–5x daily", brands:"Suguna Pre-Starter, Godrej Chick Starter, Venky's Super Start",           notes:"Add glucose 5g/litre on Day 1 only. Dip each chick's beak in water on arrival." },
-  { minDay:8,   maxDay:21,  phase:"Starter",     feedType:"Chick Starter Mash",           proteinPct:"20–22%", gramsPerBird:[15,30],   waterMl:[220,280],  freq:"3–4x daily", brands:"Suguna Starter, RCM Starter Mash, Godrej Broiler Starter, Venky's Starter", notes:"Plain clean water only. Never cold water. Check every 2 hrs." },
-  { minDay:22,  maxDay:42,  phase:"Starter",     feedType:"Chick Starter / Early Grower", proteinPct:"19–20%", gramsPerBird:[30,55],   waterMl:[280,350],  freq:"3x daily",   brands:"Suguna Starter, Kerafed Grower, RCM Grower Mash",                          notes:"Start giving grit from Week 3. Remove sick birds immediately." },
-  { minDay:43,  maxDay:70,  phase:"Grower I",    feedType:"Grower Mash",                  proteinPct:"16–18%", gramsPerBird:[60,80],   waterMl:[350,400],  freq:"2x daily",   brands:"Suguna Grower, Godrej Grower, Kerafed Grower, Venky's Grower, RCM Grower", notes:"Transition from starter over 5-7 days. Mix 50/50 first week." },
-  { minDay:71,  maxDay:120, phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[80,90],   waterMl:[400,450],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
-  { minDay:121, maxDay:140, phase:"Pre-Layer",   feedType:"Pre-Layer Mash",               proteinPct:"17–18%", gramsPerBird:[90,100],  waterMl:[450,500],  freq:"2x daily",   brands:"Suguna Pre-Layer, Godrej Pre-Layer, RCM Pre-Layer, Venky's Pullet Feed",  notes:"Start calcium grit now. Set up nest boxes before Day 130." },
+  { minDay:1,   maxDay:7,   phase:"Pre-Starter", feedType:"Pre-Starter Crumble",          proteinPct:"22–24%", gramsPerBird:[10,12],   waterMl:[200,220],  freq:"4–5x daily", brands:"Suguna Pre-Starter, Godrej Chick Starter, Venky's Super Start",           notes:"Add glucose 5g/litre on Day 1 only. Dip each chick's beak in water on arrival." },
+  { minDay:8,   maxDay:14,  phase:"Starter",     feedType:"Chick Starter Mash",           proteinPct:"20–22%", gramsPerBird:[16,18],   waterMl:[220,260],  freq:"3–4x daily", brands:"Suguna Starter, RCM Starter Mash, Godrej Broiler Starter, Venky's Starter", notes:"Plain clean water only. Never cold water. Check every 2 hrs." },
+  { minDay:15,  maxDay:21,  phase:"Starter",     feedType:"Chick Starter Mash",           proteinPct:"20–22%", gramsPerBird:[24,26],   waterMl:[240,280],  freq:"3–4x daily", brands:"Suguna Starter, RCM Starter Mash, Godrej Broiler Starter, Venky's Starter", notes:"Plain clean water only. Never cold water. Check every 2 hrs." },
+  { minDay:22,  maxDay:28,  phase:"Starter",     feedType:"Chick Starter / Early Grower", proteinPct:"19–20%", gramsPerBird:[31,33],   waterMl:[280,320],  freq:"3x daily",   brands:"Suguna Starter, Kerafed Grower, RCM Grower Mash",                          notes:"Start giving grit from Week 3. Remove sick birds immediately." },
+  { minDay:29,  maxDay:35,  phase:"Starter",     feedType:"Chick Starter / Early Grower", proteinPct:"19–20%", gramsPerBird:[36,38],   waterMl:[300,340],  freq:"3x daily",   brands:"Suguna Starter, Kerafed Grower, RCM Grower Mash",                          notes:"Start giving grit from Week 3. Remove sick birds immediately." },
+  { minDay:36,  maxDay:42,  phase:"Starter",     feedType:"Chick Starter / Early Grower", proteinPct:"19–20%", gramsPerBird:[41,43],   waterMl:[320,360],  freq:"3x daily",   brands:"Suguna Starter, Kerafed Grower, RCM Grower Mash",                          notes:"Start giving grit from Week 3. Remove sick birds immediately." },
+  { minDay:43,  maxDay:49,  phase:"Grower I",    feedType:"Grower Mash",                  proteinPct:"16–18%", gramsPerBird:[45,47],   waterMl:[340,380],  freq:"2x daily",   brands:"Suguna Grower, Godrej Grower, Kerafed Grower, Venky's Grower, RCM Grower", notes:"Transition from starter over 5-7 days. Mix 50/50 first week." },
+  { minDay:50,  maxDay:56,  phase:"Grower I",    feedType:"Grower Mash",                  proteinPct:"16–18%", gramsPerBird:[49,51],   waterMl:[350,390],  freq:"2x daily",   brands:"Suguna Grower, Godrej Grower, Kerafed Grower, Venky's Grower, RCM Grower", notes:"Keep the feed change gradual if birds are still finishing starter feed." },
+  { minDay:57,  maxDay:63,  phase:"Grower I",    feedType:"Grower Mash",                  proteinPct:"16–18%", gramsPerBird:[53,55],   waterMl:[360,400],  freq:"2x daily",   brands:"Suguna Grower, Godrej Grower, Kerafed Grower, Venky's Grower, RCM Grower", notes:"Keep feeders empty for a short midday period to maintain appetite." },
+  { minDay:64,  maxDay:70,  phase:"Grower I",    feedType:"Grower Mash",                  proteinPct:"16–18%", gramsPerBird:[57,59],   waterMl:[370,410],  freq:"2x daily",   brands:"Suguna Grower, Godrej Grower, Kerafed Grower, Venky's Grower, RCM Grower", notes:"Keep feeders empty for a short midday period to maintain appetite." },
+  { minDay:71,  maxDay:77,  phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[60,62],   waterMl:[380,420],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:78,  maxDay:84,  phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[63,65],   waterMl:[390,430],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:85,  maxDay:91,  phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[66,68],   waterMl:[400,440],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:92,  maxDay:98,  phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[69,71],   waterMl:[410,450],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:99,  maxDay:105, phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[72,74],   waterMl:[420,460],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:106, maxDay:112, phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[75,77],   waterMl:[430,470],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:113, maxDay:120, phase:"Grower II",   feedType:"Developer / Grower Feed",      proteinPct:"15–16%", gramsPerBird:[79,81],   waterMl:[440,480],  freq:"2x daily",   brands:"Suguna Developer, RCM Developer, Godrej Developer, Venky's Developer",    notes:"Do NOT give layer feed yet — high calcium damages kidneys." },
+  { minDay:121, maxDay:140, phase:"Pre-Layer",   feedType:"Pre-Layer Mash",               proteinPct:"17–18%", gramsPerBird:[85,87],   waterMl:[450,500],  freq:"2x daily",   brands:"Suguna Pre-Layer, Godrej Pre-Layer, RCM Pre-Layer, Venky's Pullet Feed",  notes:"Start calcium grit now. Set up nest boxes before Day 130." },
   { minDay:141, maxDay:999, phase:"Layer",       feedType:"Layer Mash / Pellets",         proteinPct:"16–17%", gramsPerBird:[110,120], waterMl:[500,1000], freq:"2x daily",   brands:"Suguna Layer, Kerafed Layer, Venky's Layer, RCM Layer Pellets",           notes:"16 hrs light/day. Calcium grit free access always." },
+];
+
+const LIGHT_SCHEDULE = [
+  { minDay:1,   maxDay:7,   weekLabel:"Week 1",        totalHours:"24:00", morning:"Continuous light",               evening:"No dark period",                  action:"Keep brooder lights ON continuously for the full first week.", note:"BV380 guide: full light in week 1 helps chicks recover from transport stress and find feed/water quickly." },
+  { minDay:8,   maxDay:42,  weekLabel:"Weeks 2–6",     totalHours:"20:00", morning:"Turn ON at 11:30 PM",            evening:"Turn OFF at 7:30 PM",            action:"Give a 4-hour dark period daily from 7:30 PM to 11:30 PM.", note:"Official BV380 rearing guide: 20 hours light, 4 hours darkness." },
+  { minDay:43,  maxDay:105, weekLabel:"Weeks 7–15",    totalHours:"14:00", morning:"5:30 AM to sunrise",            evening:"Sunset to 7:30 PM",              action:"Use short artificial light only around natural daylight to keep total light near 14 hours.", note:"This is the BV380 grower programme for open-sided Indian houses." },
+  { minDay:106, maxDay:112, weekLabel:"Week 16",       totalHours:"15:00", morning:"4:30 AM to sunrise",            evening:"Sunset to 7:30 PM",              action:"Start photo-stimulation at the beginning of week 16.", note:"BV380 guide says first stimulation must add at least 1 hour." },
+  { minDay:113, maxDay:119, weekLabel:"Week 17",       totalHours:"15:30", morning:"4:00 AM to sunrise",            evening:"Sunset to 7:30 PM",              action:"Increase light by another 30 minutes in week 17.", note:"Do not reduce light once you start stimulation." },
+  { minDay:120, maxDay:140, weekLabel:"Weeks 18–20",   totalHours:"16:00", morning:"4:00 AM to sunrise",            evening:"Sunset to 8:00 PM",              action:"Maintain full light programme until start of lay.", note:"This is the full BV380 pre-lay schedule for reaching 16 hours total light." },
+  { minDay:141, maxDay:999, weekLabel:"Layer Phase",   totalHours:"16:00", morning:"4:00 AM to sunrise",            evening:"Sunset to 8:00 PM",              action:"Keep the same 16-hour lighting consistently during lay.", note:"Never reduce light hours in production." },
 ];
 
 const VACCINATIONS = [
@@ -325,21 +347,93 @@ const DEWORMING = [
 ];
 
 const WEIGHT_TARGETS = [
-  { day:42,  grams:[380,420] },  { day:56,  grams:[550,620] },
-  { day:70,  grams:[720,800] },  { day:84,  grams:[900,1000] },
-  { day:112, grams:[1200,1350] },{ day:126, grams:[1400,1500] },
+  { day:7,   grams:[59,62] },    { day:14,  grams:[117,123] },
+  { day:21,  grams:[171,179] },  { day:28,  grams:[239,251] },
+  { day:35,  grams:[332,349] },  { day:42,  grams:[429,451] },
+  { day:49,  grams:[527,554] },  { day:56,  grams:[614,646] },
+  { day:63,  grams:[702,738] },  { day:70,  grams:[790,830] },
+  { day:77,  grams:[878,923] },  { day:84,  grams:[975,1025] },
+  { day:91,  grams:[1068,1122] },{ day:98,  grams:[1151,1210] },
+  { day:105, grams:[1233,1297] },{ day:112, grams:[1316,1384] },
+  { day:119, grams:[1389,1461] },{ day:126, grams:[1463,1538] },
 ];
 
 const FEED_TRANSITIONS = [43, 71, 121, 141];
+
+const BV380_REFERENCE_DOCS = [
+  {
+    title: "Hot & Tropical Climates Guide",
+    type: "PDF",
+    note: "Best official fit for South Indian farm conditions including heat, ventilation, water, and light management.",
+    url: "https://layinghens.hendrix-genetics.com/documents/2034/Management_Guide_Hot_and_Tropical_Climate_EN_4.pdf",
+    source: "Official Hendrix Genetics guide",
+  },
+  {
+    title: "Tropical Rearing Tips",
+    type: "PDF",
+    note: "Focused practical paper for rearing pullets under hot and tropical conditions.",
+    url: "https://layinghens.hendrix-genetics.com/documents/974/Tips_and_Tricks_for_Rearing_Poultry_in_Hot_and_Tropical_Climates_EN.pdf",
+    source: "Official Hendrix Genetics paper",
+  },
+  {
+    title: "Optimal Chick Start",
+    type: "PDF",
+    note: "Direct chick-start guidance for feed, water, density, light, temperature, and humidity during early brooding.",
+    url: "https://layinghens.hendrix-genetics.com/documents/2020/HGL_Layer_Vision_29_October_2023_EN.pdf",
+    source: "Official Hendrix Genetics paper",
+  },
+  {
+    title: "Nutrition Guide 2025",
+    type: "PDF",
+    note: "Useful for feed formulation and nutrient targets when adjusting the BV380 feeding programme.",
+    url: "https://layinghens.hendrix-genetics.com/documents/2396/Nutrition_Guide_2025_vs2.pdf",
+    source: "Official Hendrix Genetics guide",
+  },
+  {
+    title: "Preparing the Long-Life Layer",
+    type: "PDF",
+    note: "Supporting paper for pullet growth, bodyweight targets, and the transition into lay.",
+    url: "https://layinghens.hendrix-genetics.com/documents/1260/Preparing_the_long-life_Layer.pdf",
+    source: "Official Hendrix Genetics paper",
+  },
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getFeed(day) {
   return FEED_SCHEDULE.find(f => day >= f.minDay && day <= f.maxDay) || FEED_SCHEDULE[FEED_SCHEDULE.length - 1];
 }
+function getLightPlan(day) {
+  return LIGHT_SCHEDULE.find(l => day >= l.minDay && day <= l.maxDay) || LIGHT_SCHEDULE[LIGHT_SCHEDULE.length - 1];
+}
 function getPrevFeed(day) {
   const t = FEED_TRANSITIONS.find(td => day >= td && day <= td + 6);
   if (!t) return null;
   return FEED_SCHEDULE.find(f => (t-1) >= f.minDay && (t-1) <= f.maxDay);
+}
+function midpoint(range) {
+  return Math.round((range[0] + range[1]) / 2);
+}
+function getWeightTarget(day) {
+  if (!WEIGHT_TARGETS.length) return null;
+  if (day <= WEIGHT_TARGETS[0].day) return WEIGHT_TARGETS[0].grams;
+  const last = WEIGHT_TARGETS[WEIGHT_TARGETS.length - 1];
+  if (day >= last.day) return last.grams;
+  for (let i = 1; i < WEIGHT_TARGETS.length; i += 1) {
+    const prev = WEIGHT_TARGETS[i - 1];
+    const next = WEIGHT_TARGETS[i];
+    if (day === next.day) return next.grams;
+    if (day > prev.day && day < next.day) {
+      const ratio = (day - prev.day) / (next.day - prev.day);
+      return [
+        Math.round(prev.grams[0] + (next.grams[0] - prev.grams[0]) * ratio),
+        Math.round(prev.grams[1] + (next.grams[1] - prev.grams[1]) * ratio),
+      ];
+    }
+  }
+  return last.grams;
+}
+function formatWeightRange(range) {
+  return range ? `${range[0]}–${range[1]}g` : "N/A";
 }
 function isTransitionWeek(day) { return FEED_TRANSITIONS.some(t => day >= t && day <= t+6); }
 function transitionRatio(day) {
@@ -388,6 +482,7 @@ function getSessions(dayAge, totalG) {
 
 function buildTasks(dayAge, numBirds) {
   const feed    = getFeed(dayAge);
+  const lightPlan = getLightPlan(dayAge);
   const totalG  = Math.round(((feed.gramsPerBird[0]+feed.gramsPerBird[1])/2)*numBirds);
   const totalWL = Math.round(((feed.waterMl[0]+feed.waterMl[1])/2)*numBirds/1000*10)/10;
   const sessions = getSessions(dayAge, totalG);
@@ -397,19 +492,29 @@ function buildTasks(dayAge, numBirds) {
   const prevF   = getPrevFeed(dayAge);
   const tasks   = [];
 
-  // LIGHTING TASKS — based on age and time of day
-  // Pre-layer (Day 112+): start introducing light schedule to prepare reproductive system
-  // Layer (Day 141+): full 16-hr light protocol active
-  if (dayAge >= 112) {
-    // Pre-dawn light task (appears as a "Before Dawn" time slot)
+  if (dayAge <= 7) {
     tasks.push({
       time: "Pre-Dawn",
       icon: "💡",
-      priority: dayAge >= 141 ? "high" : "medium",
-      task: "Turn ON shed light at 5:00 AM (pre-dawn)",
-      detail: dayAge >= 141
-        ? "Kerala sunrise ~6:00–6:30 AM. Turn bulb ON at 5 AM to start 16-hr light cycle. Use warm white/white LED — 40W per 100 sq ft. Light triggers egg-laying hormones in the brain."
-        : `Day ${dayAge}: Start introducing light schedule now — body preparing for laying. Turn ON at 5 AM, OFF when sun is fully up (~6:30 AM).`,
+      priority: "high",
+      task: "Keep brooder light ON for full 24 hours",
+      detail: `${lightPlan.weekLabel} · ${lightPlan.totalHours} total light. ${lightPlan.note}`,
+    });
+  } else if (dayAge <= 42) {
+    tasks.push({
+      time: "Pre-Dawn",
+      icon: "💡",
+      priority: "medium",
+      task: "Turn ON brooder lights at 11:30 PM",
+      detail: `${lightPlan.weekLabel} · ${lightPlan.totalHours} total light. Keep chicks in darkness only from 7:30 PM to 11:30 PM.`,
+    });
+  } else if (dayAge >= 43) {
+    tasks.push({
+      time: "Pre-Dawn",
+      icon: "💡",
+      priority: dayAge >= 120 ? "high" : "medium",
+      task: `Morning light: ${lightPlan.morning}`,
+      detail: `${lightPlan.weekLabel} · ${lightPlan.totalHours} total light. ${lightPlan.note}`,
     });
   }
 
@@ -474,25 +579,22 @@ function buildTasks(dayAge, numBirds) {
   tasks.push({ time:"Evening", icon:"💧", priority:"high",   task:"Refill water for overnight" });
   if (dayAge >= 130)
     tasks.push({ time:"Evening", icon:"🥚", priority:"high",   task:"Collect eggs (evening round)", detail:"Collect twice daily — reduces breakage and egg-eating habit." });
-  // Evening lighting — turn on after sunset to complete 16-hr cycle
-  if (dayAge >= 112) {
-    tasks.push({
-      time: "Evening",
-      icon: "💡",
-      priority: dayAge >= 141 ? "high" : "medium",
-      task: dayAge >= 141
-        ? "Turn ON shed light at 6:30 PM — keep ON until 8:00 PM"
-        : `Day ${dayAge}: Turn ON light at 6:30 PM, OFF at 7:30 PM — building light habit before laying`,
-      detail: dayAge >= 141
-        ? "Kerala sunset ~6:00–6:30 PM. Adding 1.5 hrs evening light completes your 16-hr cycle (5 AM bulb + daylight + evening bulb). NEVER reduce hours once hens are laying — causes moult & stops eggs for weeks."
-        : "Pre-layer prep: Gradually increase light to 14–15 hrs now so the transition to 16 hrs is not a shock when laying starts.",
-    });
+  if (dayAge <= 42) {
     tasks.push({
       time: "Evening",
       icon: "🔌",
       priority: "medium",
-      task: "Turn OFF shed light at 8:00 PM sharp",
-      detail: "Consistent OFF time is as important as ON time. Irregular light = confused hormone cycle = fewer eggs. Use a timer plug (available at any hardware shop in Kerala) to automate this.",
+      task: "Turn OFF brooder lights at 7:30 PM",
+      detail: `${lightPlan.weekLabel} dark period starts now and ends at 11:30 PM.`,
+    });
+  }
+  if (dayAge >= 43) {
+    tasks.push({
+      time: "Evening",
+      icon: "💡",
+      priority: dayAge >= 120 ? "high" : "medium",
+      task: `Evening light: ${lightPlan.evening}`,
+      detail: `${lightPlan.action} Use a timer switch so the total light stays consistent every day.`,
     });
   }
   if (dayAge <= 7)
@@ -508,11 +610,18 @@ function buildTelegram(dayAge, numBirds, tasks, feed) {
   const totalWL = Math.round(((feed.waterMl[0]+feed.waterMl[1])/2)*numBirds/1000*10)/10;
   const sessions = getSessions(dayAge, totalG);
   const urgent  = tasks.filter(t => t.priority === "urgent");
+  const daysToLay = Math.max(0, 141 - dayAge);
+  const expectedLayDate = addCalendarDays(new Date(), 141 - dayAge);
+  const tomorrow = getDayFeedSnapshot(dayAge + 1, numBirds);
   let m = `🐔 *BV-380 Daily Farm Update*\n`;
   m += `📅 Day ${dayAge} | Phase: *${feed.phase}*\n`;
   m += `🌾 *${feed.feedType}* | ${feed.freq}\n`;
   m += `📦 Total Feed: *${totalG}g* in *${sessions.length} sessions*\n`;
   m += `💧 Total Water: *${totalWL}L*\n\n`;
+  m += dayAge >= 141
+    ? `🥚 *Lay status:* Active since *${formatLongDate(expectedLayDate)}*\n`
+    : `🥚 *Expected lay date:* *${formatLongDate(expectedLayDate)}* (in ${daysToLay} days)\n`;
+  m += `📦 *Tomorrow prep:* ${tomorrow.feed.feedType} · ${tomorrow.totalG}g · ${tomorrow.totalWL}L water\n\n`;
   m += `🍽️ *FEED SESSIONS:*\n`;
   sessions.forEach(s => { m += `• ${s.icon} ${s.label}: *${s.grams}g* (${Math.round(s.grams/numBirds)}g/bird)\n`; });
   if (urgent.length) { m += `\n🚨 *URGENT TODAY:*\n`; urgent.forEach(t => { m += `• ${t.icon} ${t.task}\n`; }); }
@@ -574,6 +683,20 @@ function formatShortDate(value, locale = "en-IN") {
   return date.toLocaleDateString(locale, { day: "numeric", month: "short" });
 }
 
+function formatLongDate(value, locale = "en-IN") {
+  const date = parseDateValue(value);
+  if (!date) return "";
+  return date.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+}
+
+function addCalendarDays(value, days) {
+  const date = startOfLocalDay(value);
+  if (!date) return null;
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
 const SHARED_DATA_KEY = "bv380_shared_data";
 const SESSION_KEY = "bv380_session";
 const DEFAULT_SETTINGS = { numBirds:10, chickenAge:25, botToken:"", chatId:"", notifyTime:"08:00", setupDone:false, startDate:null };
@@ -626,6 +749,14 @@ function dailyFeedKg(day, numBirds) {
   const f = getFeed(day);
   const avgG = (f.gramsPerBird[0] + f.gramsPerBird[1]) / 2;
   return (avgG * numBirds) / 1000;
+}
+
+function getDayFeedSnapshot(day, numBirds) {
+  const feed = getFeed(day);
+  const totalG = Math.round(((feed.gramsPerBird[0] + feed.gramsPerBird[1]) / 2) * numBirds);
+  const totalWL = Math.round(((feed.waterMl[0] + feed.waterMl[1]) / 2) * numBirds / 1000 * 10) / 10;
+  const sessions = getSessions(day, totalG);
+  return { day, feed, totalG, totalWL, sessions };
 }
 
 // Build a phase-by-phase feed plan from current day
@@ -1533,13 +1664,22 @@ export default function App() {
     return (settings.chickenAge || 25) + diffCalendarDays(now, settings.startDate);
   })();
 
-  const feed     = getFeed(dayAge);
+  const feedSnapshot = getDayFeedSnapshot(dayAge, settings.numBirds || 10);
+  const tomorrowSnapshot = getDayFeedSnapshot(dayAge + 1, settings.numBirds || 10);
+  const feed     = feedSnapshot.feed;
+  const lightPlan = getLightPlan(dayAge);
   const nBirds   = settings.numBirds || 10;
-  const totalG   = Math.round(((feed.gramsPerBird[0]+feed.gramsPerBird[1])/2)*nBirds);
-  const totalWL  = Math.round(((feed.waterMl[0]+feed.waterMl[1])/2)*nBirds/1000*10)/10;
-  const sessions = getSessions(dayAge, totalG);
+  const weightRange = getWeightTarget(dayAge);
+  const avgWeight = midpoint(weightRange);
+  const totalG   = feedSnapshot.totalG;
+  const totalWL  = feedSnapshot.totalWL;
+  const sessions = feedSnapshot.sessions;
   const tasks    = buildTasks(dayAge, nBirds);
   const pc       = phaseColor(feed.phase);
+  const daysToLay = Math.max(0, 141 - dayAge);
+  const layDateOffset = 141 - dayAge;
+  const expectedLayDate = addCalendarDays(now, layDateOffset);
+  const tomorrowPhaseChange = tomorrowSnapshot.feed.phase !== feed.phase;
 
   const byTime = t => tasks.filter(tk => tk.time === t);
   const pdT = byTime("Pre-Dawn");
@@ -1726,7 +1866,7 @@ export default function App() {
           {step === 3 && (
             <div>
               <div style={{ color:"#FFB74D", fontSize:15, fontWeight:"bold", marginBottom:16 }}>✅ Ready to start!</div>
-              {[["🐔 Birds",`${temp.numBirds} BV-380 hens`],["📅 Age",`Day ${temp.chickenAge}`],["🌾 Feed",getFeed(temp.chickenAge||25).feedType],["⏰ Alert",`${temp.notifyTime} IST daily`],["📱 Telegram",temp.botToken?"✅ Configured":"⚠️ Not set"]].map(([k,v])=>(
+              {[["🐔 Birds",`${temp.numBirds} BV-380 hens`],["📅 Age",`Day ${temp.chickenAge}`],["🌾 Feed",getFeed(temp.chickenAge||25).feedType],["⏰ Alert",`${temp.notifyTime} IST daily`],["📱 Telegram",temp.botToken&&temp.chatId?"✅ Configured":"⚠️ Not set"]].map(([k,v])=>(
                 <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
                   <span style={{ color:"rgba(255,255,255,0.6)", fontSize:13 }}>{k}</span>
                   <span style={{ color:"white", fontSize:13, fontWeight:"bold" }}>{v}</span>
@@ -1741,7 +1881,7 @@ export default function App() {
   );
 
   // ── MAIN ───────────────────────────────────────────────────────────────────
-  const NAV = [["dashboard","🏠","Home"],["feed","🛒","Feed"],["health","🩺","Health"],["greens","🌿","Greens"],["finance","💰","Finance"],["ferment","🫙","Ferment"],["schedule","📅","Schedule"],["settings","⚙️","Settings"]];
+  const NAV = [["dashboard","🏠","Home"],["feed","🛒","Feed"],["health","🩺","Health"],["greens","🌿","Greens"],["finance","💰","Finance"],["ferment","🫙","Ferment"],["docs","📚","Docs"],["schedule","📅","Schedule"],["settings","⚙️","Settings"]];
 
   return (
     <div className="app-shell">
@@ -1786,6 +1926,9 @@ export default function App() {
               <div style={{ color:"rgba(255,255,255,0.4)", fontWeight:600, marginBottom:4 }}>Today's Feed</div>
               <div>{feed.feedType}</div>
               <div>{Math.round(((feed.gramsPerBird[0]+feed.gramsPerBird[1])/2)*nBirds)}g total</div>
+              <div style={{ color:"rgba(255,255,255,0.4)", fontWeight:600, marginTop:12, marginBottom:4 }}>Tomorrow Prep</div>
+              <div>{tomorrowSnapshot.feed.feedType}</div>
+              <div>{tomorrowSnapshot.totalG}g total</div>
             </div>
           </div>
         </nav>
@@ -1844,11 +1987,12 @@ export default function App() {
             </div>
 
             {/* Stats row */}
-            <div className="grid-3" style={{ marginBottom:16 }}>
+            <div className="auto-grid-2" style={{ marginBottom:16 }}>
               {[
                 {icon:"🌾", label:"Total Feed",  value:`${totalG}g`,   sub:`${(totalG/1000).toFixed(2)}kg`},
                 {icon:"💧", label:"Water/Bird",  value:`${Math.round((feed.waterMl[0]+feed.waterMl[1])/2)}ml`, sub:`${totalWL}L total`},
-                {icon:"🥚", label:dayAge>=141?"Egg Day":"To Lay", value:dayAge>=141?"Active":`${141-dayAge}d`, sub:dayAge>=141?"Collect 2x":"days away"},
+                {icon:"⚖️", label:"Avg Weight",  value:`${avgWeight}g`, sub:formatWeightRange(weightRange)},
+                {icon:"🥚", label:dayAge>=141?"Egg Day":"To Lay", value:dayAge>=141?"Active":`${daysToLay}d`, sub:dayAge>=141?`Started ${formatLongDate(expectedLayDate)}`:formatLongDate(expectedLayDate)},
               ].map(s=>(
                 <div key={s.label} style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:"14px 12px", textAlign:"center" }}>
                   <div style={{ fontSize:22 }}>{s.icon}</div>
@@ -1876,7 +2020,7 @@ export default function App() {
             <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${pc}33`, borderRadius:12, padding:16, marginBottom:16 }}>
               <div style={{ fontSize:12, color:"#FFB74D", fontWeight:"bold", marginBottom:12, letterSpacing:1 }}>🌾 TODAY'S FEED DETAILS</div>
               <div className="auto-grid-2" style={{ marginBottom:12 }}>
-                {[["Feed Type",feed.feedType],["Per Bird/Day",`${feed.gramsPerBird[0]}–${feed.gramsPerBird[1]}g`],[`Total (${nBirds} birds)`,`${totalG}g`],["Protein",feed.proteinPct],["Frequency",feed.freq],["Sessions",`${sessions.length}x per day`]].map(([k,v])=>(
+                {[["Feed Type",feed.feedType],["Per Bird/Day",`${feed.gramsPerBird[0]}–${feed.gramsPerBird[1]}g`],["Avg Body Weight",`${avgWeight}g`],[`Weight Range`,formatWeightRange(weightRange)],[`Total (${nBirds} birds)`,`${totalG}g`],["Protein",feed.proteinPct],["Frequency",feed.freq],["Sessions",`${sessions.length}x per day`]].map(([k,v])=>(
                   <div key={k}><div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{k}</div><div style={{ fontSize:13, color:"white", fontWeight:"bold" }}>{v}</div></div>
                 ))}
               </div>
@@ -1893,6 +2037,29 @@ export default function App() {
               {feed.notes && <div style={{ marginTop:8, padding:"8px 10px", background:"rgba(255,255,255,0.04)", borderRadius:8, fontSize:11, color:"rgba(255,255,255,0.5)" }}>💡 {feed.notes}</div>}
             </div>
 
+            <div style={{ background:"rgba(30,136,229,0.08)", border:"1px solid rgba(30,136,229,0.28)", borderRadius:12, padding:16, marginBottom:16 }}>
+              <div style={{ fontSize:12, color:"#90CAF9", fontWeight:"bold", marginBottom:12, letterSpacing:1 }}>📦 TOMORROW'S FEED PREP</div>
+              <div className="auto-grid-2" style={{ marginBottom:12 }}>
+                {[["Day",`Day ${tomorrowSnapshot.day}`],["Feed Type",tomorrowSnapshot.feed.feedType],["Per Bird/Day",`${tomorrowSnapshot.feed.gramsPerBird[0]}–${tomorrowSnapshot.feed.gramsPerBird[1]}g`],[`Total (${nBirds} birds)`,`${tomorrowSnapshot.totalG}g`],["Water Total",`${tomorrowSnapshot.totalWL}L`],["Sessions",`${tomorrowSnapshot.sessions.length}x per day`]].map(([k,v])=>(
+                  <div key={k}><div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{k}</div><div style={{ fontSize:13, color:"white", fontWeight:"bold" }}>{v}</div></div>
+                ))}
+              </div>
+              {tomorrowPhaseChange && (
+                <div style={{ marginBottom:10, padding:"8px 10px", background:"rgba(255,183,77,0.12)", borderRadius:8, fontSize:11, color:"#FFB74D" }}>
+                  ⚡ Tomorrow changes phase from <b>{feed.phase}</b> to <b>{tomorrowSnapshot.feed.phase}</b>. Prepare <b>{tomorrowSnapshot.feed.feedType}</b> today.
+                </div>
+              )}
+              <div style={{ background:"rgba(255,255,255,0.04)", borderRadius:8, padding:"10px 12px" }}>
+                <div style={{ fontSize:10, color:"#90CAF9", fontWeight:"bold", marginBottom:8, letterSpacing:1 }}>🍽️ TOMORROW'S FEED SPLIT</div>
+                {tomorrowSnapshot.sessions.map((s,i)=>(
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingBottom:6, marginBottom:i<tomorrowSnapshot.sessions.length-1?6:0, borderBottom:i<tomorrowSnapshot.sessions.length-1?"1px solid rgba(255,255,255,0.06)":"none" }}>
+                    <span style={{ fontSize:12, color:"rgba(255,255,255,0.8)" }}>{s.icon} {s.label}</span>
+                    <span style={{ fontSize:13, color:"#90CAF9", fontWeight:"bold" }}>{s.grams}g <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)", fontWeight:"normal" }}>({Math.round(s.grams/nBirds)}g/bird)</span></span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Task sections — each rendered independently */}
 
             {/* Pre-Dawn lighting — only shown for Day 112+ */}
@@ -1901,28 +2068,21 @@ export default function App() {
                 <div style={{ background:"linear-gradient(135deg,rgba(25,25,60,0.8),rgba(40,30,80,0.6))", border:"1px solid rgba(147,112,219,0.4)", borderRadius:12, padding:"14px 16px", marginBottom:10 }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
                     <div style={{ fontSize:11, color:"#B39DDB", fontWeight:"bold", letterSpacing:2 }}>🌙 PRE-DAWN LIGHTING</div>
-                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", background:"rgba(147,112,219,0.15)", padding:"3px 10px", borderRadius:20 }}>5:00 AM</div>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", background:"rgba(147,112,219,0.15)", padding:"3px 10px", borderRadius:20 }}>{lightPlan.totalHours}</div>
                   </div>
-                  {/* Kerala Light Schedule Visual */}
                   <div style={{ background:"rgba(0,0,0,0.3)", borderRadius:8, padding:"10px 12px", marginBottom:10 }}>
-                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.45)", marginBottom:8, letterSpacing:1 }}>KERALA DAILY LIGHT SCHEDULE</div>
-                    <div style={{ display:"flex", alignItems:"center", gap:0, height:20, borderRadius:6, overflow:"hidden", marginBottom:6 }}>
-                      <div style={{ flex:1, background:"rgba(20,20,40,0.9)", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:8, color:"rgba(255,255,255,0.3)" }}>12am</span></div>
-                      <div style={{ flex:1, background:"rgba(147,112,219,0.5)", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:8, color:"white" }}>💡5am</span></div>
-                      <div style={{ flex:3, background:"linear-gradient(90deg,#FFA726,#FFD54F,#FFA726)", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:8, color:"rgba(0,0,0,0.7)", fontWeight:"bold" }}>☀️ SUNLIGHT 6:30am–6:30pm</span></div>
-                      <div style={{ flex:1, background:"rgba(147,112,219,0.5)", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:8, color:"white" }}>💡8pm</span></div>
-                      <div style={{ flex:1, background:"rgba(20,20,40,0.9)", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:8, color:"rgba(255,255,255,0.3)" }}>12am</span></div>
-                    </div>
-                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, color:"rgba(255,255,255,0.5)" }}>
-                      <span>💡 Bulb: 5:00 AM → 6:30 AM</span>
-                      <span style={{ color:"#FFB74D", fontWeight:"bold" }}>≈ 15–16 hrs total ✅</span>
-                      <span>💡 Bulb: 6:30 PM → 8:00 PM</span>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.45)", marginBottom:8, letterSpacing:1 }}>CURRENT BV380 LIGHT PLAN</div>
+                    <div className="auto-grid-2" style={{ gap:8 }}>
+                      <div><div style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>Stage</div><div style={{ fontSize:12, color:"white", fontWeight:"bold" }}>{lightPlan.weekLabel}</div></div>
+                      <div><div style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>Total Light</div><div style={{ fontSize:12, color:"white", fontWeight:"bold" }}>{lightPlan.totalHours}</div></div>
+                      <div><div style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>Morning</div><div style={{ fontSize:12, color:"white", fontWeight:"bold" }}>{lightPlan.morning}</div></div>
+                      <div><div style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>Evening</div><div style={{ fontSize:12, color:"white", fontWeight:"bold" }}>{lightPlan.evening}</div></div>
                     </div>
                   </div>
                   <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", lineHeight:1.7, marginBottom:6 }}>
-                    <span style={{ color:"#B39DDB", fontWeight:"bold" }}>Why it works:</span> Hens have a light-sensing gland in their brain that triggers egg-laying hormones when it detects 16+ hrs of light. Kerala's natural daylight is only 12–13 hrs — not enough for peak production.
+                    <span style={{ color:"#B39DDB", fontWeight:"bold" }}>BV380 rule:</span> {lightPlan.action}
                   </div>
-                  <div style={{ fontSize:11, color:"#EF9A9A" }}>⚠️ Never reduce light hours once hens are laying — sudden drops cause forced moult and stop eggs for weeks.</div>
+                  <div style={{ fontSize:11, color:"#EF9A9A" }}>⚠️ {lightPlan.note}</div>
                 </div>
                 <SessionBlock label="🌙 PRE-DAWN TASKS" color="#B39DDB" tasks={pdT} startIdx={pdStart} dayAge={dayAge} checked={checked} onToggle={toggle} readOnly={readOnly} />
               </>
@@ -2003,6 +2163,39 @@ export default function App() {
                   </div>
                 </div>
               )}
+
+              <div style={{ background:"rgba(30,136,229,0.08)", border:"1px solid rgba(30,136,229,0.28)", borderRadius:12, padding:16, marginBottom:16 }}>
+                <div style={{ fontSize:11, color:"#90CAF9", fontWeight:"bold", letterSpacing:2, marginBottom:10 }}>📦 TOMORROW'S FEED PREP</div>
+                <div style={{ fontSize:13, color:"white", marginBottom:10 }}>
+                  Prepare for <b>Day {tomorrowSnapshot.day}</b> with <b>{tomorrowSnapshot.feed.feedType}</b>.
+                </div>
+                <div className="auto-grid-2" style={{ marginBottom:10 }}>
+                  {[
+                    ["Phase", tomorrowSnapshot.feed.phase],
+                    ["Per bird/day", `${tomorrowSnapshot.feed.gramsPerBird[0]}–${tomorrowSnapshot.feed.gramsPerBird[1]}g`],
+                    ["Total feed", `${tomorrowSnapshot.totalG}g`],
+                    ["Water total", `${tomorrowSnapshot.totalWL}L`],
+                  ].map(([k,v])=>(
+                    <div key={k} style={{ background:"rgba(255,255,255,0.04)", borderRadius:8, padding:"8px 10px" }}>
+                      <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{k}</div>
+                      <div style={{ fontSize:14, fontWeight:"bold", color:"white" }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+                {tomorrowPhaseChange && (
+                  <div style={{ marginBottom:10, padding:"8px 10px", background:"rgba(255,183,77,0.1)", borderRadius:8, fontSize:11, color:"#FFB74D" }}>
+                    Tomorrow is a phase switch: <b>{feed.phase}</b> ends today, and <b>{tomorrowSnapshot.feed.phase}</b> starts tomorrow.
+                  </div>
+                )}
+                <div style={{ background:"rgba(255,255,255,0.04)", borderRadius:8, padding:"10px 12px" }}>
+                  {tomorrowSnapshot.sessions.map((s,i)=>(
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingBottom:6, marginBottom:i<tomorrowSnapshot.sessions.length-1?6:0, borderBottom:i<tomorrowSnapshot.sessions.length-1?"1px solid rgba(255,255,255,0.06)":"none" }}>
+                      <span style={{ fontSize:12, color:"rgba(255,255,255,0.8)" }}>{s.icon} {s.label}</span>
+                      <span style={{ fontSize:13, color:"#90CAF9", fontWeight:"bold" }}>{s.grams}g</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* Stock Status */}
               <div style={{ background:"rgba(255,255,255,0.04)", border:`1px solid ${stockColor}44`, borderRadius:12, padding:16, marginBottom:16 }}>
@@ -2177,10 +2370,82 @@ export default function App() {
           );
         })()}
 
+        {screen === "docs" && (
+          <>
+            <div style={{ fontSize:16, fontWeight:"bold", color:"#A5D6A7", marginBottom:4 }}>📚 BV380 Documents</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.45)", marginBottom:16 }}>Official PDFs curated for BV380-style flocks in hot and tropical South Indian farm conditions.</div>
+
+            <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:16, marginBottom:16 }}>
+              <div style={{ fontSize:12, color:"#A5D6A7", fontWeight:"bold", marginBottom:8 }}>What This Tab Contains</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.6)", lineHeight:1.7 }}>
+                No official document found was labeled specifically as “BV380 South India”. These are the closest official Hendrix Genetics references for tropical BV380 management, chick start, nutrition, and transition to lay.
+              </div>
+            </div>
+
+            {BV380_REFERENCE_DOCS.map(doc => (
+              <div key={doc.title} style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:16, marginBottom:12 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
+                  <div style={{ flex:1 }}>
+                    <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:6, flexWrap:"wrap" }}>
+                      <div style={{ fontSize:14, color:"white", fontWeight:"bold" }}>{doc.title}</div>
+                      <div style={{ background:"rgba(30,136,229,0.18)", borderRadius:999, padding:"2px 8px", fontSize:9, color:"#90CAF9", fontWeight:"bold" }}>{doc.type}</div>
+                    </div>
+                    <div style={{ fontSize:12, color:"rgba(255,255,255,0.68)", lineHeight:1.7, marginBottom:6 }}>{doc.note}</div>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)" }}>Source: {doc.source}</div>
+                  </div>
+                  <a href={doc.url} target="_blank" rel="noreferrer" style={{ background:"rgba(255,183,77,0.12)", border:"1px solid rgba(255,183,77,0.3)", borderRadius:8, padding:"8px 12px", color:"#FFB74D", fontSize:11, fontWeight:"bold", textDecoration:"none", whiteSpace:"nowrap", flexShrink:0 }}>
+                    Open PDF
+                  </a>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
         {/* ── SCHEDULE ── */}
         {screen === "schedule" && (
           <>
             <div style={{ fontSize:16, fontWeight:"bold", color:"#FFB74D", marginBottom:16 }}>📅 Full Schedule Overview</div>
+            <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, color:"#FFB74D", fontWeight:"bold", letterSpacing:1, marginBottom:12 }}>🥚 LAY FORECAST</div>
+              <div className="auto-grid-2" style={{ marginBottom:10 }}>
+                {[
+                  ["Current age", `Day ${dayAge}`],
+                  ["Days to lay", dayAge >= 141 ? "Started" : `${daysToLay} days`],
+                  ["Expected lay date", formatLongDate(expectedLayDate)],
+                  ["Tomorrow feed", tomorrowSnapshot.feed.feedType],
+                ].map(([k,v])=>(
+                  <div key={k} style={{ background:"rgba(255,255,255,0.03)", borderRadius:8, padding:"10px 12px" }}>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{k}</div>
+                    <div style={{ fontSize:13, color:"white", fontWeight:"bold" }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", lineHeight:1.7 }}>
+                {dayAge >= 141
+                  ? `The flock is already in lay phase. Based on the current age record, laying should have started around ${formatLongDate(expectedLayDate)}.`
+                  : `Based on the current age record, laying is expected around ${formatLongDate(expectedLayDate)}. Use tomorrow's feed preview to prepare in advance as the flock approaches lay.`}
+              </div>
+            </div>
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", letterSpacing:2, marginBottom:10 }}>BV380 LIGHTING PROGRAMME</div>
+              {LIGHT_SCHEDULE.filter(l => l.minDay <= 141).map((l,i)=>{
+                const active = dayAge >= l.minDay && dayAge <= l.maxDay;
+                const past = dayAge > l.maxDay;
+                return (
+                  <div key={i} style={{ background:active?"rgba(147,112,219,0.14)":past?"rgba(255,255,255,0.02)":"rgba(255,255,255,0.04)", border:`1px solid ${active?"rgba(147,112,219,0.45)":"rgba(255,255,255,0.08)"}`, borderRadius:10, padding:"12px 14px", marginBottom:8, opacity:past?0.55:1 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                      <div style={{ fontSize:13, fontWeight:"bold", color:active?"#B39DDB":"white" }}>{active?"▶ ":""}Day {l.minDay}–{l.maxDay}</div>
+                      <div style={{ background:"rgba(147,112,219,0.22)", borderRadius:10, padding:"2px 10px", fontSize:10, fontWeight:"bold", color:"#D1C4E9" }}>{l.totalHours}</div>
+                    </div>
+                    <div style={{ fontSize:12, color:"white", fontWeight:"bold", marginBottom:4 }}>{l.weekLabel}</div>
+                    <div style={{ fontSize:11, color:"rgba(255,255,255,0.75)" }}>Morning: {l.morning}</div>
+                    <div style={{ fontSize:11, color:"rgba(255,255,255,0.75)" }}>Evening: {l.evening}</div>
+                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.45)", marginTop:6 }}>{l.note}</div>
+                  </div>
+                );
+              })}
+            </div>
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", letterSpacing:2, marginBottom:10 }}>FEED PHASES</div>
               {FEED_SCHEDULE.map((f,i)=>{
@@ -2193,6 +2458,23 @@ export default function App() {
                     </div>
                     <div style={{ fontSize:12, color:"rgba(255,255,255,0.7)" }}><b>{f.feedType}</b> · {f.gramsPerBird[0]}–{f.gramsPerBird[1]}g/bird · {f.freq}</div>
                     <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginTop:4 }}>Protein: {f.proteinPct} · Water: {f.waterMl[0]}–{f.waterMl[1]}ml/bird</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", letterSpacing:2, marginBottom:10 }}>BV380 WEIGHT TARGETS</div>
+              {WEIGHT_TARGETS.map((w,i)=>{
+                const active = dayAge <= w.day && (i === 0 || dayAge > WEIGHT_TARGETS[i - 1].day);
+                const past = dayAge > w.day;
+                const avg = midpoint(w.grams);
+                return (
+                  <div key={w.day} style={{ background:active?"rgba(255,183,77,0.12)":past?"rgba(255,255,255,0.02)":"rgba(255,255,255,0.04)", border:`1px solid ${active?"rgba(255,183,77,0.45)":"rgba(255,255,255,0.08)"}`, borderRadius:10, padding:"12px 14px", marginBottom:8, opacity:past?0.55:1 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                      <div style={{ fontSize:13, fontWeight:"bold", color:active?"#FFB74D":"white" }}>{active?"▶ ":""}Day {w.day}</div>
+                      <div style={{ fontSize:11, color:"#90CAF9", fontWeight:"bold" }}>Avg {avg}g</div>
+                    </div>
+                    <div style={{ fontSize:12, color:"rgba(255,255,255,0.8)" }}>Expected bodyweight: <b style={{ color:"white" }}>{formatWeightRange(w.grams)}</b></div>
                   </div>
                 );
               })}
