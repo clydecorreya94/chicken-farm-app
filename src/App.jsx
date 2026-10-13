@@ -18,7 +18,7 @@ const GLOBAL_CSS = `
   .app-bottomnav-item { flex: 1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 9px 4px 11px; cursor:pointer; border:none; background:transparent; color: rgba(255,255,255,0.35); font-family:'DM Sans',sans-serif; transition: color 0.2s; gap:3px; }
   .app-bottomnav-item.active { color: #E87722; }
   .app-bottomnav-item .nav-icon { font-size: 22px; line-height:1; }
-  .app-bottomnav-item .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+  .app-bottomnav-item .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
   @media (min-width: 768px) {
     .app-topbar { padding: 14px 28px; }
@@ -398,6 +398,202 @@ const BV380_REFERENCE_DOCS = [
   },
 ];
 
+const BV380_DOC_KNOWLEDGE = [
+  {
+    id: "doc-hot-climate-water",
+    title: "Hot Climate Water Management",
+    source: "Hot & Tropical Climates Guide",
+    tags: ["heat", "summer", "water", "kerala", "tropical", "drinkers", "electrolytes"],
+    text: "In hot and tropical conditions, birds must have cool clean water available at all times. Increase drinker checks during afternoon heat, keep water shaded, and use electrolyte or vitamin support after heat stress. Wet litter, stale water, and poor drinker hygiene quickly worsen disease pressure in humid Kerala-style weather.",
+  },
+  {
+    id: "doc-hot-climate-ventilation",
+    title: "Ventilation And Housing",
+    source: "Hot & Tropical Climates Guide",
+    tags: ["housing", "ventilation", "humidity", "ammonia", "kerala", "rain"],
+    text: "Tropical layer housing must prioritize airflow, dry litter, and low ammonia. Open-sided houses need strong cross ventilation, protection from rain splash, and frequent replacement of damp litter patches. Heat and humidity together reduce feed intake and increase stress, so crowding and poor airflow should be avoided.",
+  },
+  {
+    id: "doc-tropical-rearing-chick",
+    title: "Chick Brooding In Tropical Conditions",
+    source: "Tropical Rearing Tips",
+    tags: ["chick", "brooding", "brooder", "temperature", "humidity", "starter"],
+    text: "Early chick management in tropical conditions depends on correct brooder temperature, dry bedding, fast access to feed and water, and frequent observation. Chicks that huddle are too cold, chicks far from the heat source may be too hot, and uneven spread suggests setup problems. The first week should focus on stable temperature, hydration, and easy feed access.",
+  },
+  {
+    id: "doc-optimal-chick-start",
+    title: "Optimal Chick Start",
+    source: "Optimal Chick Start",
+    tags: ["chick", "start", "feed", "water", "light", "placement"],
+    text: "A strong chick start requires immediate placement with feed and water already ready, bright enough light for chicks to find resources, and close monitoring in the first days. Early intake drives later bodyweight and uniformity. Poor chick start cannot be fully recovered later, so the first days are critical for future laying performance.",
+  },
+  {
+    id: "doc-feed-phases",
+    title: "BV380 Feed Phases",
+    source: "Embedded Farm Programme",
+    tags: ["feed", "phase", "starter", "grower", "pre-layer", "layer"],
+    text: "The current BV380 programme in this app uses pre-starter on days 1 to 7, starter through day 42, grower I through day 70, grower II through day 120, pre-layer through day 140, and layer feed from day 141 onward. Feed changes should be gradual across transition weeks to avoid intake drops and gut upset.",
+  },
+  {
+    id: "doc-grower-calcium",
+    title: "Do Not Start Layer Feed Too Early",
+    source: "Embedded Farm Programme",
+    tags: ["calcium", "grower", "pre-layer", "kidney", "layer feed"],
+    text: "Developer or grower feed should continue until the pre-layer window because high-calcium layer feed given too early can damage kidneys and reduce long-term pullet development. Pre-layer feed and calcium grit should be introduced close to point of lay, not in mid-grower stage.",
+  },
+  {
+    id: "doc-lighting-to-lay",
+    title: "Lighting For Transition To Lay",
+    source: "Embedded Farm Programme + Long-Life Layer Paper",
+    tags: ["light", "lay", "pre-lay", "photo stimulation", "hours"],
+    text: "The flock should remain around 14 hours of light during grower weeks, then be stepped up during weeks 16 to 20 until 16 hours total light is reached before lay. Once production starts, light hours should not be reduced. Sudden drops in light can harm laying consistency.",
+  },
+  {
+    id: "doc-lay-readiness",
+    title: "Preparing For Start Of Lay",
+    source: "Preparing the Long-Life Layer",
+    tags: ["lay", "bodyweight", "uniformity", "nest boxes", "pre-layer"],
+    text: "Good lay performance depends on pullets reaching target bodyweight, maintaining uniformity, and moving into lay without stress. Before expected lay, nest boxes, calcium access, and light programme should already be ready. Birds that are underweight or uneven at this stage often show weaker early production.",
+  },
+  {
+    id: "doc-weight-targets",
+    title: "Bodyweight Tracking",
+    source: "Embedded Farm Programme",
+    tags: ["weight", "bodyweight", "uniformity", "growth"],
+    text: "The app includes staged BV380 weight targets from week 1 through week 18. Random sample weighing is useful for checking whether the flock is on track. If birds are below expected target ranges, feed quality, intake, water access, and health status should be reviewed early rather than waiting until lay.",
+  },
+  {
+    id: "doc-feed-tomorrow",
+    title: "Prepare Feed One Day Early",
+    source: "Operational Planning Rule",
+    tags: ["tomorrow", "prep", "feed planning", "mixing", "purchase"],
+    text: "For farm operations, next-day feed should be prepared or planned one day early, especially near phase changes. When tomorrow starts a new phase, the correct feed bag, mixing ratio, and water plan should be ready today so there is no morning delay.",
+  },
+  {
+    id: "doc-vaccination-practice",
+    title: "Vaccination And Stress Control",
+    source: "Embedded Farm Programme",
+    tags: ["vaccination", "stress", "water", "brooding", "health"],
+    text: "Vaccination works best when birds are healthy, hydrated, and not under strong heat stress. Drinkers used for live vaccine should be clean and free from chlorine residues. Avoid unnecessary stress before and after vaccination and follow the age schedule consistently.",
+  },
+  {
+    id: "doc-nutrition",
+    title: "Nutrition Priorities",
+    source: "Nutrition Guide 2025",
+    tags: ["nutrition", "protein", "energy", "amino acids", "layer", "grower"],
+    text: "Nutrition should match the flock stage. Starter phases require higher protein support, grower phases focus on controlled development, and pre-layer plus layer phases need balanced calcium, phosphorus, and production nutrients. In hot weather, intake may fall, so feed quality and nutrient density matter more.",
+  },
+];
+
+function tokenizeForSearch(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(token => token.length > 2);
+}
+
+function searchDocKnowledge(query, limit = 5) {
+  const qTokens = tokenizeForSearch(query);
+  if (!qTokens.length) return [];
+  return BV380_DOC_KNOWLEDGE.map(chunk => {
+    const haystack = `${chunk.title} ${chunk.source} ${chunk.text} ${chunk.tags.join(" ")}`.toLowerCase();
+    let score = 0;
+    qTokens.forEach(token => {
+      if (chunk.tags.some(tag => tag.includes(token))) score += 4;
+      if (chunk.title.toLowerCase().includes(token)) score += 3;
+      if (chunk.source.toLowerCase().includes(token)) score += 2;
+      if (haystack.includes(token)) score += 1;
+    });
+    return { ...chunk, score };
+  })
+    .filter(chunk => chunk.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+function buildLocalDocAnswer(question, sources) {
+  if (!sources.length) {
+    return "I could not find a matching answer in the built-in BV380 knowledge base.";
+  }
+  const q = question.toLowerCase();
+  const top = sources.slice(0, 3);
+  const primary = top[0];
+
+  const extractSentences = text => String(text || "")
+    .split(/(?<=[.!?])\s+/)
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  const firstUsefulSentence = text => extractSentences(text)[0] || String(text || "");
+
+  const classifyQuestion = () => {
+    if (/(weight|body ?weight|uniform|growth|track)/.test(q)) return "weight";
+    if (/(chick|brood|brooder|first week|placement|start)/.test(q)) return "chick";
+    if (/(heat|tropical|summer|humidity|monsoon|ventilation|kerala)/.test(q)) return "climate";
+    if (/(lay|egg|pre-?lay|nest|calcium|light)/.test(q)) return "lay";
+    if (/(feed|starter|grower|layer feed|pre-layer|nutrition)/.test(q)) return "feed";
+    if (/(vaccine|vaccination|stress|disease|health)/.test(q)) return "health";
+    return "general";
+  };
+
+  const type = classifyQuestion();
+  const answerLineByType = {
+    weight: "Bodyweight tracking should be used as an early warning tool, not only as a record. The flock should be weighed in random samples and compared against the staged BV380 target ranges so action can be taken before lay.",
+    chick: "Early chick management has the biggest long-term effect on later bodyweight and laying performance. Feed, water, temperature, and observation must all be right from the first days.",
+    climate: "In Kerala-like tropical conditions, heat, humidity, stale water, and poor airflow are major operational risks. Water management and ventilation should be treated as daily priorities.",
+    lay: "As the flock approaches lay, bodyweight, uniformity, calcium access, nest preparation, and the light programme need to be ready together. Weak preparation at this stage usually shows up as weaker early production.",
+    feed: "Feed decisions should follow the flock stage closely. Phase changes should be gradual, and feed quality matters more when intake is reduced by heat or stress.",
+    health: "Health and stress control work best when birds are hydrated, feed intake is stable, and routine handling is calm. Preventive steps matter more than recovery after stress.",
+    general: firstUsefulSentence(primary.text),
+  };
+
+  const actionLines = [];
+  if (type === "weight") {
+    actionLines.push("Weigh a small random sample of birds regularly and compare it with the app's target range.");
+    actionLines.push("If birds are below target, review feed intake, water access, feed quality, and health immediately.");
+    actionLines.push("Do not wait until laying starts to correct poor growth or poor uniformity.");
+  } else if (type === "chick") {
+    actionLines.push("Prepare feed and water before chicks are placed.");
+    actionLines.push("Watch chick spread under the brooder to judge temperature and comfort.");
+    actionLines.push("Treat the first week as critical because weak intake early is hard to recover later.");
+  } else if (type === "climate") {
+    actionLines.push("Check drinkers more often in afternoon heat and keep water cool and clean.");
+    actionLines.push("Keep airflow strong, reduce damp litter, and prevent ammonia buildup.");
+    actionLines.push("Treat humidity plus heat as a combined risk, especially during monsoon or hot summer days.");
+  } else if (type === "lay") {
+    actionLines.push("Before expected lay, confirm target bodyweight, nest readiness, calcium access, and light schedule.");
+    actionLines.push("Avoid reducing light hours once production is approaching or active.");
+    actionLines.push("Underweight or uneven pullets should be corrected before lay rather than after production starts.");
+  } else if (type === "feed") {
+    actionLines.push("Use the flock stage to decide whether starter, grower, pre-layer, or layer feed is appropriate.");
+    actionLines.push("Handle feed transitions gradually to avoid intake drops or gut upset.");
+    actionLines.push("Do not start high-calcium layer feed too early in grower birds.");
+  } else if (type === "health") {
+    actionLines.push("Keep birds hydrated and calm before any vaccination or stressful handling.");
+    actionLines.push("Use clean water systems and avoid avoidable heat stress around health events.");
+    actionLines.push("Follow the age schedule consistently and intervene early when birds are off feed or weak.");
+  } else {
+    top.forEach(source => actionLines.push(firstUsefulSentence(source.text)));
+  }
+
+  const whyLines = top.map((source, idx) => `[${idx + 1}] ${firstUsefulSentence(source.text)}`);
+  const sourceLine = `Sources used: ${top.map((source, idx) => `[${idx + 1}] ${source.title}`).join(", ")}`;
+
+  return [
+    `Answer`,
+    answerLineByType[type],
+    ``,
+    `What To Do`,
+    ...actionLines.map(line => `- ${line}`),
+    ``,
+    `Why`,
+    ...whyLines.map(line => `- ${line}`),
+    ``,
+    sourceLine,
+  ].join("\n");
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getFeed(day) {
   return FEED_SCHEDULE.find(f => day >= f.minDay && day <= f.maxDay) || FEED_SCHEDULE[FEED_SCHEDULE.length - 1];
@@ -699,12 +895,35 @@ function addCalendarDays(value, days) {
 
 const SHARED_DATA_KEY = "bv380_shared_data";
 const SESSION_KEY = "bv380_session";
-const DEFAULT_SETTINGS = { numBirds:10, chickenAge:25, botToken:"", chatId:"", notifyTime:"08:00", setupDone:false, startDate:null };
-const DEFAULT_TEMP = { numBirds:10, chickenAge:25, botToken:"", chatId:"", notifyTime:"08:00" };
+const DEFAULT_SETTINGS = {
+  numBirds:10,
+  chickenAge:25,
+  botToken:"",
+  chatId:"",
+  notifyTime:"08:00",
+  setupDone:false,
+  startDate:null,
+};
+const DEFAULT_TEMP = {
+  numBirds:10,
+  chickenAge:25,
+  botToken:"",
+  chatId:"",
+  notifyTime:"08:00",
+};
 const AUTH_USERS = {
   admin123: { username: "admin123", password: "admin123", role: "admin", label: "Admin" },
   guest: { username: "guest", password: "guest123", role: "guest", label: "Guest" },
 };
+
+function normalizeCage(raw, index) {
+  return {
+    id: (raw && raw.id) || `cage_${index + 1}`,
+    chicks: Math.max(0, Math.round(Number(raw?.chicks) || 0)),
+    age: Math.max(0, Math.round(Number(raw?.age) || 0)),
+    ageAsOf: typeof raw?.ageAsOf === "string" && raw.ageAsOf ? raw.ageAsOf : toDateInputValue(),
+  };
+}
 
 function normalizeSharedData(raw) {
   return {
@@ -712,6 +931,7 @@ function normalizeSharedData(raw) {
     feedLogs: Array.isArray(raw?.feedLogs) ? raw.feedLogs : [],
     buyAlertDismissed: raw?.buyAlertDismissed && typeof raw.buyAlertDismissed === "object" ? raw.buyAlertDismissed : {},
     finance: Array.isArray(raw?.finance) ? raw.finance : [],
+    cages: Array.isArray(raw?.cages) ? raw.cages.map(normalizeCage) : [],
   };
 }
 
@@ -723,6 +943,7 @@ function loadSharedData(read) {
     feedLogs: read("bv380_feedlogs") || [],
     buyAlertDismissed: read("bv380_buyalerts") || {},
     finance: read("bv380_finance") || [],
+    cages: read("bv380_cages") || [],
   });
 }
 
@@ -751,6 +972,15 @@ function dailyFeedKg(day, numBirds) {
   return (avgG * numBirds) / 1000;
 }
 
+function totalFeedKgForDayRange(fromDay, toDay, numBirds) {
+  if (toDay < fromDay) return 0;
+  let total = 0;
+  for (let day = fromDay; day <= toDay; day += 1) {
+    total += dailyFeedKg(day, numBirds);
+  }
+  return total;
+}
+
 function getDayFeedSnapshot(day, numBirds) {
   const feed = getFeed(day);
   const totalG = Math.round(((feed.gramsPerBird[0] + feed.gramsPerBird[1]) / 2) * numBirds);
@@ -768,8 +998,8 @@ function buildFeedPlan(fromDay, numBirds, daysAhead = 60) {
     const f = getFeed(d);
     const phaseEnd = Math.min(f.maxDay === 999 ? endDay : f.maxDay, endDay);
     const phaseDays = phaseEnd - d + 1;
-    const dailyKg = dailyFeedKg(d, numBirds);
-    const totalKg = dailyKg * phaseDays;
+    const totalKg = totalFeedKgForDayRange(d, phaseEnd, numBirds);
+    const dailyKg = phaseDays > 0 ? totalKg / phaseDays : 0;
     const pricePerKg = FEED_PRICE_ESTIMATES[f.phase] || 40;
     // Recommend buying in practical bag sizes (25kg or 50kg bags)
     const bagSize = 25;
@@ -806,8 +1036,11 @@ function calcRemainingStock(feedLogs, currentDay, numBirds) {
   const dailyKg = dailyFeedKg(currentDay, numBirds);
   // Estimate how much consumed since purchase
   const consumed = relevantLogs.reduce((s, l) => {
-    const daysSince = diffCalendarDays(new Date(), l.date);
-    return s + Math.min(l.kg, daysSince * dailyKg);
+    const daysSince = Math.max(0, diffCalendarDays(new Date(), l.date));
+    if (daysSince <= 0) return s;
+    const purchaseDayAge = Math.max(1, currentDay - daysSince);
+    const consumedKg = totalFeedKgForDayRange(purchaseDayAge, currentDay - 1, numBirds);
+    return s + Math.min(l.kg, consumedKg);
   }, 0);
   const remaining = Math.max(0, totalBought - consumed);
   const daysRemaining = dailyKg > 0 ? Math.floor(remaining / dailyKg) : 0;
@@ -1538,6 +1771,294 @@ function FermentTab({ dayAge, feed }) {
 }
 
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 🐔  CAGES TAB — per-cage chick log + daily feed requirement
+// ═══════════════════════════════════════════════════════════════════════════
+function cageCurrentAge(cage, now) {
+  const base = Math.max(0, Math.round(Number(cage?.age) || 0));
+  const asOf = parseDateValue(cage?.ageAsOf);
+  if (!asOf) return base;
+  return Math.max(0, base + diffCalendarDays(now, asOf));
+}
+
+function buildCageRows(cages, now) {
+  return (cages || []).map((cage, idx) => {
+    const chicks = Math.max(0, Math.round(Number(cage.chicks) || 0));
+    const age = cageCurrentAge(cage, now);
+    const ready = chicks > 0 && age > 0;
+    return {
+      cage, idx, chicks, age, ready,
+      snap: ready ? getDayFeedSnapshot(age, chicks) : null,
+      tmr:  ready ? getDayFeedSnapshot(age + 1, chicks) : null,
+    };
+  });
+}
+
+function CageCard({ row, editing, today, now, onEdit }) {
+  const { cage, idx, chicks, age, ready, snap, tmr } = row;
+  const fpc      = ready ? phaseColor(snap.feed.phase) : "rgba(255,255,255,0.2)";
+  const trans    = ready && isTransitionWeek(age);
+  const prevFeed = trans ? getPrevFeed(age) : null;
+  const ref      = now || new Date();
+  const dateLabel = ref.toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long" });
+  const wRange   = ready ? getWeightTarget(age) : null;
+  const daysToLay = Math.max(0, 141 - age);
+  const layDate   = addCalendarDays(ref, 141 - age);
+  const nextVax   = VACCINATIONS.filter(v => v.day > age)[0] || null;
+  const waterPerBird = ready ? Math.round((getFeed(age).waterMl[0] + getFeed(age).waterMl[1]) / 2) : 0;
+  return (
+    <div style={{ background:ready ? `${fpc}11` : "rgba(255,255,255,0.03)", border:`1px solid ${ready ? `${fpc}55` : "rgba(255,255,255,0.08)"}`, borderRadius:12, padding:16, marginBottom:12 }}>
+      {/* Hero-style header — today, day, date, phase */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10, marginBottom:12 }}>
+        <div style={{ minWidth:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <span style={{ fontSize:14, fontWeight:700, color:"white" }}>🏠 Cage {idx + 1}</span>
+            <span style={{ fontSize:9, letterSpacing:2, color:"rgba(255,255,255,0.45)" }}>TODAY</span>
+          </div>
+          <div style={{ fontSize:30, fontWeight:800, color:"white", lineHeight:1.1, marginTop:2, fontFamily:"'DM Sans',sans-serif", letterSpacing:"-0.5px" }}>{ready ? `Day ${age}` : "Day —"}</div>
+          <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{dateLabel}</div>
+        </div>
+        <div style={{ textAlign:"right", flexShrink:0 }}>
+          <div style={{ background:ready ? fpc : "rgba(255,255,255,0.1)", borderRadius:20, padding:"4px 12px", fontSize:10, fontWeight:700, color:"white", display:"inline-block" }}>{ready ? snap.feed.phase : "NOT SET"}</div>
+          <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:6 }}>🐔 {chicks} birds{ready ? ` · ${snap.sessions.length}x feeds` : ""}</div>
+        </div>
+      </div>
+
+      {editing ? (
+        <div className="auto-grid-2" style={{ marginBottom:12 }}>
+          <div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginBottom:6 }}>Chicks in cage {idx + 1}</div>
+            <input type="number" min={0} value={cage.chicks ?? 0}
+              onChange={e => onEdit(idx, { chicks: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+              className="fm-input" />
+          </div>
+          <div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginBottom:6 }}>Age today (days)</div>
+            <input type="number" min={0} value={age}
+              onChange={e => onEdit(idx, { age: Math.max(0, parseInt(e.target.value, 10) || 0), ageAsOf: today })}
+              className="fm-input" />
+          </div>
+        </div>
+      ) : (
+        <div className="auto-grid-2" style={{ marginBottom:12 }}>
+          <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px" }}>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", letterSpacing:1 }}>CHICKS</div>
+            <div style={{ fontSize:15, fontWeight:700, color:"white", marginTop:2 }}>🐔 {chicks}</div>
+          </div>
+          <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px" }}>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", letterSpacing:1 }}>AGE TODAY</div>
+            <div style={{ fontSize:15, fontWeight:700, color:"white", marginTop:2 }}>📅 Day {age}</div>
+          </div>
+        </div>
+      )}
+
+      {!ready && (
+        <div style={{ background:"rgba(255,183,77,0.08)", borderRadius:8, padding:"10px 12px", fontSize:12, color:"rgba(255,255,255,0.6)" }}>
+          {editing ? "Enter a chick count and age to calculate this cage's feed." : "Set this cage's chick count and age from the Cages tab."}
+        </div>
+      )}
+
+      {/* Per-cage summary — total feed, water, days to lay, weight */}
+      {ready && (
+        <div className="auto-grid-2" style={{ marginBottom:10 }}>
+          {[
+            { icon:"🌾", label:"Total Feed", value:`${snap.totalG}g`, sub:`${(snap.totalG/1000).toFixed(2)}kg` },
+            { icon:"💧", label:"Water", value:`${snap.totalWL}L`, sub:`${waterPerBird}ml/bird` },
+            { icon:"🥚", label:age >= 141 ? "Egg Day" : "To Lay", value:age >= 141 ? "Active" : `${daysToLay}d`, sub:age >= 141 ? `Started ${formatLongDate(layDate)}` : formatLongDate(layDate) },
+            { icon:"⚖️", label:"Avg Weight", value:wRange ? `${midpoint(wRange)}g` : "—", sub:formatWeightRange(wRange) },
+          ].map(s => (
+            <div key={s.label} style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:"8px 8px", textAlign:"center" }}>
+              <div style={{ fontSize:14 }}>{s.icon}</div>
+              <div style={{ fontSize:15, fontWeight:800, color:"#FFB74D", marginTop:2 }}>{s.value}</div>
+              <div style={{ fontSize:9, color:"rgba(255,255,255,0.4)", marginTop:2 }}>{s.label}</div>
+              <div style={{ fontSize:9, color:"rgba(255,255,255,0.3)" }}>{s.sub}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Per-cage upcoming vaccination */}
+      {ready && (
+        <div style={{ background:"rgba(30,136,229,0.1)", border:"1px solid rgba(30,136,229,0.3)", borderRadius:8, padding:"8px 10px", marginBottom:10 }}>
+          <div style={{ fontSize:9, color:"#90CAF9", fontWeight:700, letterSpacing:1 }}>💉 UPCOMING VACCINATION</div>
+          {nextVax ? (
+            <>
+              <div style={{ fontSize:12, fontWeight:700, color:"white", marginTop:3 }}>{nextVax.vaccine}</div>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Day {nextVax.day} — in <b style={{ color:"#90CAF9" }}>{nextVax.day - age} days</b> · {nextVax.disease}</div>
+            </>
+          ) : (
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginTop:3 }}>✅ All scheduled vaccinations are done for this cage</div>
+          )}
+        </div>
+      )}
+
+      {ready && (
+        <>
+          <div style={{ background:"rgba(0,0,0,0.28)", borderRadius:10, padding:"12px 14px", marginBottom:10 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10 }}>
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontSize:14, fontWeight:700, color:"#FFB74D" }}>{snap.feed.feedType}</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Day {age} · {snap.feed.proteinPct} protein · {snap.feed.freq}</div>
+              </div>
+              <div style={{ textAlign:"right", flexShrink:0 }}>
+                <div style={{ fontSize:26, fontWeight:800, color:"white", lineHeight:1 }}>{snap.totalG}g</div>
+                <div style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>feed today ({chicks} chicks)</div>
+              </div>
+            </div>
+            <div className="auto-grid-3" style={{ gap:6, marginTop:10 }}>
+              {[[`${snap.feed.gramsPerBird[0]}–${snap.feed.gramsPerBird[1]}g`,"per bird"],[`${snap.totalWL}L`,"water today"],[`${snap.sessions.length}x`,"feeds per day"]].map(([v,k]) => (
+                <div key={k} style={{ background:"rgba(255,255,255,0.05)", borderRadius:6, padding:"6px 4px", textAlign:"center" }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:"#FFB74D" }}>{v}</div>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)" }}>{k}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop:10 }}>
+              <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", letterSpacing:1, marginBottom:4 }}>SPLIT BY FEED SESSION</div>
+              {snap.sessions.map((s, i) => (
+                <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom:i < snap.sessions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                  <span style={{ fontSize:12, color:"rgba(255,255,255,0.75)" }}>{s.icon} {s.label}</span>
+                  <span style={{ fontSize:13, fontWeight:700, color:"#FFB74D" }}>{s.grams}g</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {trans && prevFeed && (
+            <div style={{ background:"rgba(239,83,80,0.1)", border:"1px solid rgba(239,83,80,0.3)", borderRadius:8, padding:"8px 10px", marginBottom:8, fontSize:11, color:"#EF9A9A", lineHeight:1.6 }}>
+              🔄 Feed transition week — mix: {transitionRatio(age)} ({prevFeed.feedType} → {snap.feed.feedType})
+            </div>
+          )}
+
+          <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", background:"rgba(255,255,255,0.04)", borderRadius:8, padding:"8px 10px", marginBottom:8, lineHeight:1.6 }}>
+            📦 <b style={{ color:"#90CAF9" }}>Tomorrow:</b> {tmr.feed.feedType} · {tmr.totalG}g total
+            {tmr.feed.phase !== snap.feed.phase && <span style={{ color:"#FFB74D" }}> — phase changes to {tmr.feed.phase}!</span>}
+          </div>
+
+          {snap.feed.notes && <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", lineHeight:1.6 }}>💡 {snap.feed.notes}</div>}
+        </>
+      )}
+    </div>
+  );
+}
+
+function CageTotalsPanel({ rows }) {
+  const readyRows    = rows.filter(r => r.ready);
+  const totalChicks  = rows.reduce((s, r) => s + r.chicks, 0);
+  const totalFeedG   = readyRows.reduce((s, r) => s + r.snap.totalG, 0);
+  const feedTypeTotals = {};
+  readyRows.forEach(r => {
+    const key = r.snap.feed.feedType;
+    feedTypeTotals[key] = (feedTypeTotals[key] || 0) + r.snap.totalG;
+  });
+  if (!rows.length) return null;
+  return (
+    <div style={{ background:"rgba(46,125,50,0.1)", border:"1px solid rgba(46,125,50,0.35)", borderRadius:12, padding:16, marginBottom:14 }}>
+      <div style={{ fontSize:11, color:"#A5D6A7", fontWeight:700, letterSpacing:2, marginBottom:12 }}>📋 TOTAL FEED NEEDED TODAY — ALL CAGES</div>
+      <div className="auto-grid-3" style={{ marginBottom:12 }}>
+        {[[`${rows.length}`,"cages"],[`${totalChicks}`,"chicks total"],[`${totalFeedG}g`,`≈ ${(totalFeedG / 1000).toFixed(2)}kg`]].map(([v,k]) => (
+          <div key={k} style={{ background:"rgba(255,255,255,0.05)", borderRadius:8, padding:"10px 8px", textAlign:"center" }}>
+            <div style={{ fontSize:18, fontWeight:800, color:"#A5D6A7" }}>{v}</div>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginTop:2 }}>{k}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", letterSpacing:1, marginBottom:6 }}>FEED BY TYPE (BUY / PREP)</div>
+      {Object.keys(feedTypeTotals).length === 0 && (
+        <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>Enter chick counts and ages to see the combined feed requirement.</div>
+      )}
+      {Object.entries(feedTypeTotals).map(([ft, g]) => (
+        <div key={ft} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+          <span style={{ fontSize:12, color:"rgba(255,255,255,0.75)" }}>{ft}</span>
+          <span style={{ fontSize:14, fontWeight:800, color:"#FFB74D" }}>{g}g</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CageHomeSection({ cages, now, onOpenCages }) {
+  const rows = buildCageRows(cages, now);
+  return (
+    <div style={{ marginBottom:16 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+        <div style={{ fontSize:12, color:"#FFB74D", fontWeight:700, letterSpacing:2 }}>🏠 CAGES — TODAY'S FEED</div>
+        <button onClick={onOpenCages} style={{ background:"rgba(255,183,77,0.12)", border:"1px solid rgba(255,183,77,0.3)", borderRadius:8, padding:"4px 10px", fontSize:11, fontWeight:700, color:"#FFB74D", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>✏️ Edit cages</button>
+      </div>
+      {rows.length === 0 ? (
+        <div style={{ background:"rgba(255,183,77,0.07)", border:"1px solid rgba(255,183,77,0.25)", borderRadius:12, padding:"18px", textAlign:"center" }}>
+          <div style={{ fontSize:26, marginBottom:6 }}>🏠</div>
+          <div style={{ fontSize:13, fontWeight:700, color:"#FFB74D", marginBottom:4 }}>No cages set up yet</div>
+          <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginBottom:12, lineHeight:1.6 }}>Select your cages, chick counts, and ages to see each cage's daily feed right here on the home screen.</div>
+          <button onClick={onOpenCages} style={{ padding:"10px 18px", background:"linear-gradient(135deg,#E87722,#BF5500)", color:"white", border:"none", borderRadius:10, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>➕ Set Up Cages</button>
+        </div>
+      ) : (
+        <>
+          {rows.map(row => <CageCard key={row.cage.id} row={row} editing={false} now={now} />)}
+          <CageTotalsPanel rows={rows} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function CagesTab({ cages, onSave, readOnly, now }) {
+  const today = toDateInputValue(now);
+
+  const setCount = rawCount => {
+    const count = Math.max(0, Math.min(24, parseInt(rawCount, 10) || 0));
+    if (count === cages.length) return;
+    if (count < cages.length && !window.confirm(`Remove ${cages.length - count} cage(s) and their saved entries?`)) return;
+    const next = Array.from({ length: count }, (_, i) => cages[i] || { id:`cage_${i + 1}_${Date.now()}`, chicks:10, age:25, ageAsOf:today });
+    onSave(next);
+  };
+
+  const updateCage = (idx, patch) => onSave(cages.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
+
+  const rows = buildCageRows(cages, now);
+
+  return (
+    <div>
+      <div style={{ fontSize:16, fontWeight:700, color:"#FFB74D", marginBottom:4 }}>🐔 Cage Feed Planner</div>
+      <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", marginBottom:16 }}>Log chick count and age for every cage — each cage gets its own daily feed plan in grams</div>
+
+      {/* Number of cages */}
+      <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:16, marginBottom:14 }}>
+        <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", letterSpacing:2, marginBottom:10 }}>NUMBER OF CAGES IN USE</div>
+        <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+          <input type="number" min={1} max={24} value={cages.length || ""} placeholder="0" disabled={readOnly}
+            onChange={e => setCount(e.target.value)}
+            style={{ width:86, padding:"9px 12px", borderRadius:8, border:"1px solid rgba(232,119,34,0.4)", background:"rgba(255,255,255,0.05)", color:"white", fontSize:15, fontWeight:700, outline:"none", boxSizing:"border-box", fontFamily:"'DM Sans',sans-serif" }} />
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+            {[1,2,3,4,5,6,8].map(n => (
+              <button key={n} onClick={() => setCount(n)} disabled={readOnly}
+                style={{ width:38, height:36, borderRadius:8, border:`1px solid ${cages.length === n ? "rgba(232,119,34,0.7)" : "rgba(255,255,255,0.12)"}`, background:cages.length === n ? "rgba(232,119,34,0.2)" : "rgba(255,255,255,0.04)", color:cages.length === n ? "#FFB74D" : "rgba(255,255,255,0.6)", fontSize:13, fontWeight:700, cursor:readOnly ? "not-allowed" : "pointer", opacity:readOnly ? 0.5 : 1, fontFamily:"'DM Sans',sans-serif" }}>{n}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:10 }}>💾 Saves automatically on this device · Ages advance by themselves each day</div>
+      </div>
+
+      {/* Empty state */}
+      {cages.length === 0 && (
+        <div style={{ background:"rgba(255,183,77,0.07)", border:"1px solid rgba(255,183,77,0.25)", borderRadius:12, padding:"24px 18px", textAlign:"center" }}>
+          <div style={{ fontSize:30, marginBottom:8 }}>🏠</div>
+          <div style={{ fontSize:14, fontWeight:700, color:"#FFB74D", marginBottom:6 }}>No cages logged yet</div>
+          <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.7 }}>Choose how many cages you are using above (for example 4), then enter the chick count and age for each cage.</div>
+        </div>
+      )}
+
+      {/* Per-cage cards */}
+      {rows.map(row => (
+        <CageCard key={row.cage.id} row={row} editing={!readOnly} today={today} now={now} onEdit={updateCage} />
+      ))}
+
+      {/* All-cage total */}
+      {rows.length > 0 && <CageTotalsPanel rows={rows} />}
+    </div>
+  );
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function TaskCard({ t, globalIdx, dayAge, checked, onToggle, readOnly }) {
   const done = !!checked[`${dayAge}_${globalIdx}`];
@@ -1585,6 +2106,7 @@ export default function App() {
   const [feedLogs,  setFeedLogs]  = useState([]);
   const [buyAlertDismissed, setBuyAlertDismissed] = useState({});
   const [financeEntries, setFinanceEntries] = useState([]);
+  const [cages, setCages] = useState([]);
   const [authUser, setAuthUser] = useState(null);
   const [authForm, setAuthForm] = useState({ username: "", password: "" });
   const [authError, setAuthError] = useState("");
@@ -1595,6 +2117,15 @@ export default function App() {
   const [newLog,         setNewLog]         = useState({ kg:"", pricePerKg:40, date:toDateInputValue() });
   const [calcDays,       setCalcDays]       = useState(20);
   const [calcTargetDate, setCalcTargetDate] = useState("");
+  const [docsQuery,      setDocsQuery]      = useState("");
+  const [docsMessages,   setDocsMessages]   = useState([
+    {
+      role: "assistant",
+      text: "Ask about BV380 chick start, tropical climate management, feeding, bodyweight, or transition to lay. Answers are grounded only in the built-in BV380 document knowledge base.",
+      sources: [],
+    },
+  ]);
+  const [docsError,      setDocsError]      = useState("");
 
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(id); }, []);
 
@@ -1610,12 +2141,13 @@ export default function App() {
     setFeedLogs(shared.feedLogs);
     setBuyAlertDismissed(shared.buyAlertDismissed);
     setFinanceEntries(shared.finance);
+    setCages(shared.cages);
     lsSet(SHARED_DATA_KEY, shared);
     if (session?.username && AUTH_USERS[session.username]) {
       const user = AUTH_USERS[session.username];
       setAuthUser({ username: user.username, role: user.role, label: user.label });
     }
-    setScreen(shared.settings?.setupDone ? "dashboard" : "setup");
+    setScreen(!shared.settings?.setupDone ? "setup" : (shared.cages.length ? "dashboard" : "cagegate"));
     setHydrated(true);
   }, []);
 
@@ -1625,21 +2157,25 @@ export default function App() {
 
   const saveFeedLogs = logs => {
     setFeedLogs(logs);
-    persistAll({ settings, feedLogs: logs, buyAlertDismissed, finance: financeEntries });
+    persistAll({ settings, feedLogs: logs, buyAlertDismissed, finance: financeEntries, cages });
   };
   const saveBuyAlerts = obj => {
     setBuyAlertDismissed(obj);
-    persistAll({ settings, feedLogs, buyAlertDismissed: obj, finance: financeEntries });
+    persistAll({ settings, feedLogs, buyAlertDismissed: obj, finance: financeEntries, cages });
   };
   const saveFinanceEntries = list => {
     setFinanceEntries(list);
     lsSet("bv380_finance", list);
-    persistAll({ settings, feedLogs, buyAlertDismissed, finance: list });
+    persistAll({ settings, feedLogs, buyAlertDismissed, finance: list, cages });
+  };
+  const saveCages = list => {
+    setCages(list);
+    persistAll({ settings, feedLogs, buyAlertDismissed, finance: financeEntries, cages: list });
   };
   const persist = useCallback(s => {
     setSettings(s);
-    persistAll({ settings: s, feedLogs, buyAlertDismissed, finance: financeEntries });
-  }, [feedLogs, buyAlertDismissed, financeEntries, persistAll]);
+    persistAll({ settings: s, feedLogs, buyAlertDismissed, finance: financeEntries, cages });
+  }, [feedLogs, buyAlertDismissed, financeEntries, cages, persistAll]);
   const canEdit = authUser?.role === "admin";
   const readOnly = !canEdit;
 
@@ -1651,11 +2187,13 @@ export default function App() {
     localStorage.removeItem("bv380_feedlogs");
     localStorage.removeItem("bv380_buyalerts");
     localStorage.removeItem("bv380_finance");
+    localStorage.removeItem("bv380_cages");
     setSettings(DEFAULT_SETTINGS);
     setTemp(DEFAULT_TEMP);
     setFeedLogs([]);
     setBuyAlertDismissed({});
     setFinanceEntries([]);
+    setCages([]);
     setScreen("setup"); setStep(1);
   };
 
@@ -1718,6 +2256,36 @@ export default function App() {
   const sendDaily = () => sendTg(buildTelegram(dayAge, nBirds, tasks, feed));
   const sendTest  = () => sendTg(`✅ *BV-380 Farm Bot Connected!*\n\nFarm tracker running.\n🐔 ${settings.numBirds} birds | Day ${dayAge}\n⏰ Daily at ${settings.notifyTime}\n\n_Kerala Clyde's BV380 Farm Manager 🌴_`);
 
+  const askDocsAssistant = async () => {
+    const question = docsQuery.trim();
+    if (!question) return;
+    const sources = searchDocKnowledge(question, 5);
+    setDocsError("");
+    setDocsMessages(prev => [...prev, { role: "user", text: question, sources: [] }]);
+    setDocsQuery("");
+
+    if (!sources.length) {
+      setDocsMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          text: "I could not find a matching section in the built-in BV380 document knowledge base. Add more PDF-derived notes or ask about chick start, tropical climate, feed phases, bodyweight, lighting, vaccination, or lay preparation.",
+          sources: [],
+        },
+      ]);
+      return;
+    }
+
+    setDocsMessages(prev => [
+      ...prev,
+      {
+        role: "assistant",
+        text: `${buildLocalDocAnswer(question, sources)}\n\nMode: local document mode.`,
+        sources,
+      },
+    ]);
+  };
+
   useEffect(() => {
     if (!settings.botToken || !settings.chatId || !settings.setupDone) return;
     const [h,m] = settings.notifyTime.split(":").map(Number);
@@ -1726,7 +2294,7 @@ export default function App() {
   }, [now]);
 
   const saveS = patch => { const s = {...settings, ...patch}; setSettings(s); persist(s); };
-  const finishSetup = () => { const s = {...temp, setupDone:true, startDate:toDateInputValue()}; setSettings(s); persist(s); setScreen("dashboard"); };
+  const finishSetup = () => { const s = {...temp, setupDone:true, startDate:toDateInputValue()}; setSettings(s); persist(s); setScreen(cages.length ? "dashboard" : "cagegate"); };
   const handleLogin = () => {
     const username = authForm.username.trim();
     const user = AUTH_USERS[username];
@@ -1738,6 +2306,7 @@ export default function App() {
     lsSet(SESSION_KEY, { username: user.username, role: user.role });
     setAuthError("");
     setAuthForm({ username, password: "" });
+    setScreen(!settings.setupDone ? "setup" : (cages.length ? "dashboard" : "cagegate"));
   };
   const handleLogout = () => {
     setAuthUser(null);
@@ -1881,7 +2450,35 @@ export default function App() {
   );
 
   // ── MAIN ───────────────────────────────────────────────────────────────────
-  const NAV = [["dashboard","🏠","Home"],["feed","🛒","Feed"],["health","🩺","Health"],["greens","🌿","Greens"],["finance","💰","Finance"],["ferment","🫙","Ferment"],["docs","📚","Docs"],["schedule","📅","Schedule"],["settings","⚙️","Settings"]];
+  // ── CAGE SELECT — shown right after login, before the home screen ─────────
+  if (screen === "cagegate") return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#1a0a00,#2d1500,#1a0a00)", padding:"28px 16px", fontFamily:"'DM Sans',sans-serif" }}>
+      <StyleInjector />
+      <div style={{ width:"100%", maxWidth:560, margin:"0 auto" }}>
+        <div style={{ background:"linear-gradient(135deg,#E87722,#BF5500)", padding:"24px 24px 20px", borderRadius:"18px 18px 0 0", textAlign:"center" }}>
+          <div style={{ fontSize:44, marginBottom:6 }}>🏠</div>
+          <div style={{ fontSize:22, fontWeight:700, color:"white" }}>Select Your Cages</div>
+          <div style={{ fontSize:12.5, color:"rgba(255,255,255,0.8)", marginTop:6 }}>Log how many cages you run, the chicks in each, and how many days old they are — then continue to your home screen.</div>
+        </div>
+        <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(232,119,34,0.3)", borderTop:"none", borderRadius:"0 0 18px 18px", padding:20 }}>
+          <CagesTab cages={cages} onSave={saveCages} readOnly={readOnly} now={now} />
+          {cages.length === 0 && (
+            <div style={{ background:"rgba(255,183,77,0.08)", border:"1px solid rgba(255,183,77,0.25)", borderRadius:10, padding:"10px 12px", marginBottom:12, fontSize:12, color:"rgba(255,255,255,0.65)", lineHeight:1.6 }}>
+              👆 Choose the number of cages, then set the chick count and age for each cage.
+            </div>
+          )}
+          <button onClick={() => setScreen("dashboard")} style={{ width:"100%", padding:14, background:"linear-gradient(135deg,#E87722,#BF5500)", color:"white", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:"0.3px", fontFamily:"'DM Sans',sans-serif" }}>
+            🏠 Continue to Home →
+          </button>
+          <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", textAlign:"center", marginTop:10, lineHeight:1.6 }}>
+            {cages.length > 0 ? `✅ ${cages.length} cage(s) saved — change them anytime from the Cages tab.` : "You can continue without cages and set them up later."}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const NAV = [["dashboard","🏠","Home"],["cages","🐔","Cages"],["feed","🛒","Feed"],["health","🩺","Health"],["greens","🌿","Greens"],["finance","💰","Finance"],["ferment","🫙","Ferment"],["docs","📚","Docs"],["schedule","📅","Schedule"],["settings","⚙️","Settings"]];
 
   return (
     <div className="app-shell">
@@ -1945,6 +2542,9 @@ export default function App() {
         {/* ── DASHBOARD ── */}
         {screen === "dashboard" && (
           <>
+            {/* Cage info — every cage's feed plan on the home screen */}
+            <CageHomeSection cages={cages} now={now} onOpenCages={() => setScreen("cages")} />
+
             {/* Feed stock alert on dashboard */}
             {(()=>{
               const st = calcRemainingStock(feedLogs, dayAge, nBirds);
@@ -1961,46 +2561,35 @@ export default function App() {
               }
               return null;
             })()}
-            {/* Hero card */}
-            <div style={{ background:`linear-gradient(135deg,${pc}22,${pc}11)`, border:`1px solid ${pc}44`, borderRadius:16, padding:20, marginBottom:16, position:"relative", overflow:"hidden" }}>
-              <div style={{ position:"absolute", right:-20, top:-20, fontSize:100, opacity:0.05 }}>🐔</div>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+            {/* Common strip — flock-wide info shared by every cage (below the cage cards) */}
+            <div style={{ background:`linear-gradient(135deg,${pc}22,${pc}11)`, border:`1px solid ${pc}44`, borderRadius:12, padding:"14px 16px", marginBottom:16 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, flexWrap:"wrap", marginBottom:12 }}>
                 <div>
-                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", letterSpacing:2 }}>TODAY</div>
-                  <div style={{ fontSize:42, fontWeight:700, color:"white", lineHeight:1, marginTop:4, fontFamily:"'DM Sans',sans-serif", letterSpacing:"-1px" }}>Day {dayAge}</div>
-                  <div style={{ fontSize:13, color:"rgba(255,255,255,0.7)", marginTop:4 }}>{now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", letterSpacing:2 }}>COMMON — ALL CAGES</div>
+                  <div style={{ fontSize:12, color:"rgba(255,255,255,0.7)", marginTop:2 }}>Day {dayAge} · {now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}</div>
                 </div>
-                <div style={{ textAlign:"right" }}>
-                  <div style={{ background:pc, borderRadius:20, padding:"4px 14px", fontSize:12, fontWeight:"bold", color:"white", marginBottom:6 }}>{feed.phase}</div>
-                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>{nBirds} birds · {sessions.length}x feeds</div>
-                </div>
+                <div style={{ background:pc, borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:"bold", color:"white" }}>{feed.phase}</div>
               </div>
-              <div style={{ marginTop:16 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-                  <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>Tasks completed today</span>
-                  <span style={{ fontSize:11, color:"#FFB74D", fontWeight:"bold" }}>{done}/{tasks.length}</span>
-                </div>
-                <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:4, height:6, overflow:"hidden" }}>
-                  <div style={{ background:`linear-gradient(90deg,${pc},#FFB74D)`, width:`${prog}%`, height:"100%", borderRadius:4, transition:"width 0.5s" }} />
-                </div>
+              <div className="auto-grid-3" style={{ marginBottom:12 }}>
+                {[
+                  { icon:"🐔", value:`${nBirds}`, label:"birds (flock)" },
+                  { icon:"🌾", value:`${totalG}g`, label:"total feed/day" },
+                  { icon:"💧", value:`${totalWL}L`, label:"total water/day" },
+                ].map(s=>(
+                  <div key={s.label} style={{ background:"rgba(255,255,255,0.05)", borderRadius:8, padding:"8px 6px", textAlign:"center" }}>
+                    <div style={{ fontSize:13 }}>{s.icon}</div>
+                    <div style={{ fontSize:14, fontWeight:800, color:"#FFB74D", marginTop:2 }}>{s.value}</div>
+                    <div style={{ fontSize:9, color:"rgba(255,255,255,0.4)" }}>{s.label}</div>
+                  </div>
+                ))}
               </div>
-            </div>
-
-            {/* Stats row */}
-            <div className="auto-grid-2" style={{ marginBottom:16 }}>
-              {[
-                {icon:"🌾", label:"Total Feed",  value:`${totalG}g`,   sub:`${(totalG/1000).toFixed(2)}kg`},
-                {icon:"💧", label:"Water/Bird",  value:`${Math.round((feed.waterMl[0]+feed.waterMl[1])/2)}ml`, sub:`${totalWL}L total`},
-                {icon:"⚖️", label:"Avg Weight",  value:`${avgWeight}g`, sub:formatWeightRange(weightRange)},
-                {icon:"🥚", label:dayAge>=141?"Egg Day":"To Lay", value:dayAge>=141?"Active":`${daysToLay}d`, sub:dayAge>=141?`Started ${formatLongDate(expectedLayDate)}`:formatLongDate(expectedLayDate)},
-              ].map(s=>(
-                <div key={s.label} style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:"14px 12px", textAlign:"center" }}>
-                  <div style={{ fontSize:22 }}>{s.icon}</div>
-                  <div style={{ fontSize:18, fontWeight:"bold", color:"#FFB74D", marginTop:4 }}>{s.value}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginTop:2 }}>{s.label}</div>
-                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.3)" }}>{s.sub}</div>
-                </div>
-              ))}
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>Tasks completed today</span>
+                <span style={{ fontSize:11, color:"#FFB74D", fontWeight:"bold" }}>{done}/{tasks.length}</span>
+              </div>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:4, height:6, overflow:"hidden" }}>
+                <div style={{ background:`linear-gradient(90deg,${pc},#FFB74D)`, width:`${prog}%`, height:"100%", borderRadius:4, transition:"width 0.5s" }} />
+              </div>
             </div>
 
             {/* Urgent */}
@@ -2399,6 +2988,74 @@ export default function App() {
                 </div>
               </div>
             ))}
+
+            <div style={{ background:"rgba(25,118,210,0.08)", border:"1px solid rgba(25,118,210,0.28)", borderRadius:12, padding:16, marginTop:18 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, marginBottom:10 }}>
+                <div>
+                  <div style={{ fontSize:13, color:"#90CAF9", fontWeight:"bold" }}>🤖 BV380 Docs Assistant</div>
+                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:4 }}>Answers are grounded in the built-in BV380 document knowledge base without internet search.</div>
+                </div>
+                <div style={{ fontSize:10, color:"#FFB74D", background:"rgba(255,183,77,0.12)", borderRadius:999, padding:"4px 10px", fontWeight:"bold", whiteSpace:"nowrap" }}>
+                  Local Mode
+                </div>
+              </div>
+
+              <div style={{ background:"rgba(255,255,255,0.04)", borderRadius:10, padding:12, marginBottom:12 }}>
+                <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginBottom:8, letterSpacing:1 }}>GOOD QUESTIONS</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.65)", lineHeight:1.7 }}>
+                  • How should I manage BV380 chicks in Kerala heat during the first week?<br/>
+                  • What should I prepare before the flock reaches lay?<br/>
+                  • Why should layer feed not be started too early?<br/>
+                  • What are the key ventilation priorities during monsoon humidity?
+                </div>
+              </div>
+
+              <div style={{ maxHeight:420, overflowY:"auto", marginBottom:12, paddingRight:4 }}>
+                {docsMessages.map((msg, idx) => (
+                  <div key={idx} style={{ marginBottom:10, display:"flex", justifyContent:msg.role === "user" ? "flex-end" : "flex-start" }}>
+                    <div style={{ maxWidth:"92%", background:msg.role === "user" ? "rgba(232,119,34,0.18)" : "rgba(255,255,255,0.05)", border:`1px solid ${msg.role === "user" ? "rgba(232,119,34,0.35)" : "rgba(255,255,255,0.08)"}`, borderRadius:12, padding:"12px 14px" }}>
+                      <div style={{ fontSize:10, color:msg.role === "user" ? "#FFB74D" : "#90CAF9", fontWeight:"bold", marginBottom:6, letterSpacing:1 }}>
+                        {msg.role === "user" ? "YOU" : "BV380 DOCS AI"}
+                      </div>
+                      <div style={{ fontSize:12, color:"rgba(255,255,255,0.82)", lineHeight:1.7, whiteSpace:"pre-wrap" }}>{msg.text}</div>
+                      {msg.sources?.length > 0 && (
+                        <div style={{ marginTop:10, paddingTop:10, borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+                          <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", marginBottom:6, letterSpacing:1 }}>RETRIEVED SOURCES</div>
+                          {msg.sources.map(source => (
+                            <div key={source.id} style={{ background:"rgba(255,255,255,0.03)", borderRadius:8, padding:"8px 10px", marginBottom:6 }}>
+                              <div style={{ fontSize:10, color:"#A5D6A7", fontWeight:"bold" }}>{source.title}</div>
+                              <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", marginTop:2 }}>{source.source}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ marginBottom:10 }}>
+                <textarea
+                  value={docsQuery}
+                  onChange={e => setDocsQuery(e.target.value)}
+                  placeholder="Ask a BV380 question based on the document knowledge base..."
+                  rows={4}
+                  style={{ width:"100%", padding:"12px 14px", borderRadius:10, border:"1px solid rgba(25,118,210,0.35)", background:"rgba(255,255,255,0.05)", color:"white", fontSize:13, outline:"none", boxSizing:"border-box", resize:"vertical", fontFamily:"'DM Sans',sans-serif" }}
+                />
+              </div>
+              {docsError && <div style={{ fontSize:11, color:"#EF9A9A", marginBottom:10 }}>{docsError}</div>}
+              <div style={{ display:"flex", gap:10, marginBottom:10 }}>
+                <button onClick={askDocsAssistant} style={{ flex:1, padding:12, background:"linear-gradient(135deg,#1E88E5,#1565C0)", color:"white", border:"none", borderRadius:10, fontSize:13, fontWeight:"bold", cursor:"pointer" }}>
+                  Ask BV380 AI
+                </button>
+                <button onClick={() => { setDocsMessages([{ role:"assistant", text:"Ask about BV380 chick start, tropical climate management, feeding, bodyweight, or transition to lay. Answers are grounded only in the built-in BV380 document knowledge base.", sources:[] }]); setDocsError(""); setDocsQuery(""); }} style={{ padding:"12px 14px", background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.72)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:10, fontSize:12, cursor:"pointer" }}>
+                  Clear
+                </button>
+              </div>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.38)", lineHeight:1.6 }}>
+                The assistant does not search the internet. It retrieves the closest matching BV380 knowledge chunks stored in this app and either answers locally or sends only that context to the configured Docs backend.
+              </div>
+            </div>
           </>
         )}
 
@@ -2585,7 +3242,7 @@ export default function App() {
             <div style={{ background:"rgba(239,83,80,0.07)", border:"1px solid rgba(239,83,80,0.25)", borderRadius:12, padding:16, marginBottom:12 }}>
               <div style={{ fontSize:12, color:"#EF9A9A", fontWeight:700, marginBottom:6 }}>⚠️ Danger Zone</div>
               <div style={{ fontSize:11, color:"rgba(255,255,255,0.45)", marginBottom:12, lineHeight:1.7 }}>
-                Full reset clears all settings, Telegram credentials, feed logs, and purchase history. Use only if starting fresh with new birds.
+                Full reset clears all settings, Telegram credentials, feed logs, purchase history, and cage entries. Use only if starting fresh with new birds.
               </div>
               <button onClick={handleReset} disabled={readOnly} style={{ width:"100%", padding:12, background:"rgba(239,83,80,0.15)", color:"#EF9A9A", border:"1px solid rgba(239,83,80,0.4)", borderRadius:10, fontSize:13, fontWeight:700, cursor:readOnly?"not-allowed":"pointer", fontFamily:"'DM Sans',sans-serif", opacity:readOnly?0.55:1 }}>
                 🗑️ Reset All Data & Start Fresh
@@ -2631,6 +3288,13 @@ export default function App() {
         ══════════════════════════════════════════════════════════════ */}
         {screen === "ferment" && (
           <FermentTab dayAge={dayAge} feed={feed} />
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════
+            🐔  CAGES TAB
+        ══════════════════════════════════════════════════════════════ */}
+        {screen === "cages" && (
+          <CagesTab cages={cages} onSave={saveCages} readOnly={readOnly} now={now} />
         )}
 
         {/* ── VACCINE DETAIL MODAL ── */}

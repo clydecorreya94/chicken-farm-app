@@ -7,6 +7,9 @@ A React + Vite single-page app for managing a small chicken farm from phone or d
 - Tracks farm finance entries for income and expenses
 - Shows poultry care guidance, feed planning, health schedules, and vaccination information
 - Shows today and next-day feed planning so feed can be prepared in advance
+- Tracks multiple cages: log how many cages are in use and the chick count + age for each cage, and get the exact daily feed (in grams, feed type, water, and session split) calculated per cage plus a combined all-cage total
+- Right after login a "Select Your Cages" screen appears until cages are set up, and from then on the home screen itself shows every cage's chick count, day age, feed type, and total grams for today (editable any time from the Cages tab)
+- Each cage card carries its own daily summary instead of a separate dashboard card: TODAY header with the cage's day and date, phase chip, total feed, water, days to lay, average weight, and the next vaccination for that cage's age — the flock-wide items (shared day, total feed/water, task progress) stay in one strip below the cage cards
 - Shows projected start-of-lay timing with an expected lay date based on flock age
 - Includes a dedicated `Docs` tab with official BV380-relevant reference PDFs for tropical/South Indian conditions
 - Supports role-based login with an admin account and a guest read-only account
@@ -72,8 +75,11 @@ npm run preview
 
 - Date handling was adjusted to keep `YYYY-MM-DD` values in local time instead of shifting through UTC
 - The dashboard and feed views include `Tomorrow's Feed Prep` so the next day's ration can be prepared early
+- Feed planning and feed-store stock usage are calculated from the exact day-by-day schedule, so changes across day boundaries like Day 49 to Day 50 use the correct ration instead of reusing one average rate
+- The `Cages` tab stores cage entries in the shared app data (`bv380_shared_data`), and each cage's age advances automatically day by day from the age you logged
 - The dashboard and schedule views include an expected lay date derived from the configured flock age and start date
 - The `Docs` tab contains curated official Hendrix Genetics PDFs relevant to BV380-style tropical farm management
+- The `Docs` tab includes a document-grounded assistant that runs in local document mode
 - Finance entries are stored in the shared app data object and also mirrored to the legacy `bv380_finance` key for compatibility
 - The finance tracker is intended to allow admin users to add income and expense entries and show them in the log immediately after save
 
