@@ -12,97 +12,6 @@ import FermentTab from "./components/FermentTab";
 import CagesTab, { CageHomeSection } from "./components/CagesTab";
 import { SessionBlock } from "./components/TaskCard";
 
-// ─── Responsive CSS ────────────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body, #root { height: 100%; }
-  body { font-family: 'DM Sans', sans-serif; background: #0a0500; color: #f0e8d8; display:block; min-height:100vh; -webkit-font-smoothing: antialiased; }
-  #root { width: 100%; }
-  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(232,119,34,0.3); border-radius: 2px; }
-
-  .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
-  .app-topbar { background: linear-gradient(135deg,#E87722,#BF5500); padding: 12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow: 0 2px 20px rgba(232,119,34,0.35); }
-  .app-body { display: flex; flex: 1; min-height: 0; }
-  .app-sidebar { display: none; }
-  .app-content { flex: 1; padding: 16px 16px 80px; max-width: 100%; overflow-x: hidden; }
-  .app-bottomnav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); background: rgba(10,5,0,0.97); border-top: 1px solid rgba(232,119,34,0.2); z-index: 100; backdrop-filter: blur(16px); }
-  .app-bottomnav-item { flex: 1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 9px 4px 11px; cursor:pointer; border:none; background:transparent; color: rgba(255,255,255,0.35); font-family:'DM Sans',sans-serif; transition: color 0.2s; gap:3px; }
-  .app-bottomnav-item.active { color: #E87722; }
-  .app-bottomnav-item .nav-icon { font-size: 22px; line-height:1; }
-  .app-bottomnav-item .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-
-  @media (min-width: 768px) {
-    .app-topbar { padding: 14px 28px; }
-    .app-body { flex-direction: row; align-items: flex-start; }
-    .app-sidebar { display: flex; flex-direction: column; width: 220px; min-height: calc(100vh - 56px); background: rgba(255,255,255,0.02); border-right: 1px solid rgba(232,119,34,0.12); padding: 20px 10px; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; flex-shrink: 0; }
-    .sidebar-logo { padding: 8px 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 12px; }
-    .sidebar-logo .sl-birds { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; }
-    .app-sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; cursor:pointer; border:none; background:transparent; color:rgba(255,255,255,0.45); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; width:100%; text-align:left; transition: all 0.15s; margin-bottom:2px; }
-    .app-sidebar-item:hover { background:rgba(232,119,34,0.08); color:rgba(255,255,255,0.8); }
-    .app-sidebar-item.active { background:rgba(232,119,34,0.15); color:#FFB74D; font-weight:600; }
-    .app-sidebar-item .s-icon { font-size:17px; width:22px; text-align:center; }
-    .app-content { padding: 28px 32px 40px; max-width: 860px; }
-    .app-bottomnav { display: none; }
-  }
-
-  @media (min-width: 1200px) {
-    .app-content { max-width: 1000px; }
-    .app-sidebar { width: 240px; }
-  }
-
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
-  .auto-grid-2 { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-  .auto-grid-3 { display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
-  @media (max-width: 480px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .auto-grid-2, .auto-grid-3 { grid-template-columns: 1fr; } }
-  @media (min-width: 481px) and (max-width: 640px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
-
-  .card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-  .card-header { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-
-  .stat-chip { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 10px; text-align:center; }
-  .stat-chip .val { font-size: 20px; font-weight: 700; line-height: 1.1; }
-  .stat-chip .lbl { font-size: 10px; color: rgba(255,255,255,0.38); margin-top: 3px; font-weight: 500; }
-
-  .fm-input { width:100%; padding:10px 14px; border-radius:8px; border:1px solid rgba(232,119,34,0.3); background:rgba(255,255,255,0.05); color:white; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition: border-color 0.15s, background 0.15s; }
-  .fm-input:focus { border-color: rgba(232,119,34,0.65); background: rgba(255,255,255,0.07); }
-  .fm-input.mono-input { font-family: 'DM Mono', monospace; font-size: 13px; }
-
-  .btn-primary { width:100%; padding:13px; background:linear-gradient(135deg,#E87722,#BF5500); color:white; border:none; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition: opacity 0.15s; letter-spacing: 0.3px; }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-ghost { width:100%; padding:11px; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.1); border-radius:10px; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; transition: background 0.15s; }
-  .btn-ghost:hover { background: rgba(255,255,255,0.08); }
-
-  .section-label { font-size:11px; color:rgba(255,255,255,0.32); font-weight:700; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:10px; }
-
-  .alert-red    { background:rgba(239,83,80,0.1);   border:1px solid rgba(239,83,80,0.38);  border-radius:12px; padding:14px 16px; margin-bottom:14px; }
-  .alert-green  { background:rgba(46,125,50,0.1);   border:1px solid rgba(46,125,50,0.38);  border-radius:12px; padding:14px 16px; margin-bottom:14px; }
-  .alert-blue   { background:rgba(25,118,210,0.09); border:1px solid rgba(25,118,210,0.32); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
-  .alert-amber  { background:rgba(255,183,77,0.09); border:1px solid rgba(255,183,77,0.28); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
-  .alert-purple { background:rgba(147,112,219,0.09);border:1px solid rgba(147,112,219,0.32);border-radius:12px; padding:14px 16px; margin-bottom:14px; }
-
-  .prog-track { background:rgba(255,255,255,0.07); border-radius:6px; height:6px; overflow:hidden; }
-  .prog-fill  { height:100%; border-radius:6px; transition: width 0.4s ease; }
-
-  @media (min-width: 900px) {
-    .dash-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-    .dash-full { grid-column: 1 / -1; }
-  }
-`;
-
-function StyleInjector() {
-  useEffect(() => {
-    const el = document.createElement("style");
-    el.textContent = GLOBAL_CSS;
-    document.head.appendChild(el);
-    return () => document.head.removeChild(el);
-  }, []);
-  return null;
-}
-
-
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [screen,    setScreen]    = useState(() => (!INITIAL_SHARED.settings.setupDone ? "setup" : (INITIAL_SHARED.cages.length ? "dashboard" : "cagegate")));
@@ -335,7 +244,6 @@ export default function App() {
   if (!authUser) {
     return (
       <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#1a0a00,#2d1500,#1a0a00)", display:"flex", alignItems:"center", justifyContent:"center", padding:20, fontFamily:"'DM Sans',sans-serif" }}>
-        <StyleInjector />
         <div style={{ width:"100%", maxWidth:420, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(232,119,34,0.3)", borderRadius:20, overflow:"hidden" }}>
           <div style={{ background:"linear-gradient(135deg,#E87722,#BF5500)", padding:"28px 28px 22px", textAlign:"center" }}>
             <div style={{ fontSize:48, marginBottom:8 }}>🔐</div>
@@ -369,7 +277,6 @@ export default function App() {
   if (authUser.role === "guest" && !settings.setupDone) {
     return (
       <div style={{ minHeight:"100vh", background:"#0a0500", display:"flex", alignItems:"center", justifyContent:"center", padding:20, fontFamily:"'DM Sans',sans-serif" }}>
-        <StyleInjector />
         <div style={{ width:"100%", maxWidth:480, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,183,77,0.25)", borderRadius:18, padding:24 }}>
           <div style={{ fontSize:18, fontWeight:700, color:"#FFB74D", marginBottom:10 }}>Guest access is view-only</div>
           <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", lineHeight:1.7, marginBottom:16 }}>
@@ -384,7 +291,6 @@ export default function App() {
   // ── SETUP ──────────────────────────────────────────────────────────────────
   if (screen === "setup") return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#1a0a00,#2d1500,#1a0a00)", display:"flex", alignItems:"center", justifyContent:"center", padding:20, fontFamily:"'DM Sans',sans-serif" }}>
-      <StyleInjector />
       <div style={{ width:"100%", maxWidth:480, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(232,119,34,0.3)", borderRadius:20, overflow:"hidden" }}>
         <div style={{ background:"linear-gradient(135deg,#E87722,#BF5500)", padding:"32px 32px 24px", textAlign:"center" }}>
           <div style={{ fontSize:52, marginBottom:8 }}>🐔</div>
@@ -459,7 +365,6 @@ export default function App() {
   // ── CAGE SELECT — shown right after login, before the home screen ─────────
   if (screen === "cagegate") return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#1a0a00,#2d1500,#1a0a00)", padding:"28px 16px", fontFamily:"'DM Sans',sans-serif" }}>
-      <StyleInjector />
       <div style={{ width:"100%", maxWidth:560, margin:"0 auto" }}>
         <div style={{ background:"linear-gradient(135deg,#E87722,#BF5500)", padding:"24px 24px 20px", borderRadius:"18px 18px 0 0", textAlign:"center" }}>
           <div style={{ fontSize:44, marginBottom:6 }}>🏠</div>
@@ -488,7 +393,6 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <StyleInjector />
       {/* Top bar */}
       <div className="app-topbar">
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
