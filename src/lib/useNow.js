@@ -1,0 +1,14 @@
+import { useState, useEffect } from "react";
+
+// Shared ticking clock. The farm only needs minute resolution (day-age
+// math, clock display), so one interval is enough.
+function useNow(intervalMs = 60000) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+export default useNow;

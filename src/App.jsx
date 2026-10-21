@@ -1,16 +1,26 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from "react";
 import { FEED_SCHEDULE, LIGHT_SCHEDULE, VACCINATIONS, WEIGHT_TARGETS } from "./data/schedule";
 import { BV380_REFERENCE_DOCS, searchDocKnowledge, buildLocalDocAnswer } from "./data/docs";
 import { diffCalendarDays, addCalendarDays, formatLongDate, formatShortDate, toDateInputValue } from "./lib/dates";
 import { getFeed, getLightPlan, getWeightTarget, midpoint, formatWeightRange, phaseColor, getDayFeedSnapshot, buildFeedPlan, calcRemainingStock, daysLeftInPhase, FEED_PRICE_ESTIMATES } from "./lib/feed";
 import { buildTasks, buildTelegram } from "./lib/tasks";
 import { SHARED_DATA_KEY, SESSION_KEY, SCHEMA_VERSION, DEFAULT_SETTINGS, DEFAULT_TEMP, AUTH_USERS, normalizeSharedData, lsSet, INITIAL_SHARED, INITIAL_SESSION } from "./lib/storage";
-import HealthTab from "./components/HealthTab";
-import GreensTab from "./components/GreensTab";
-import FinanceTab from "./components/FinanceTab";
-import FermentTab from "./components/FermentTab";
-import CagesTab, { CageHomeSection } from "./components/CagesTab";
+import useNow from "./lib/useNow";
 import { SessionBlock } from "./components/TaskCard";
+// CagesTab stays eager: the dashboard's CageHomeSection shares its CageCard
+// and totals components, so the home screen needs that module immediately.
+import CagesTab, { CageHomeSection } from "./components/CagesTab";
+
+// Tabs are only needed once the user navigates to them — split them out of
+// the main chunk so first paint (login + dashboard) stays fast.
+const HealthTab = lazy(() => import("./components/HealthTab"));
+const GreensTab = lazy(() => import("./components/GreensTab"));
+const FinanceTab = lazy(() => import("./components/FinanceTab"));
+const FermentTab = lazy(() => import("./components/FermentTab"));
+
+const TabFallback = () => (
+  <div style={{ textAlign: "center", padding: "40px 0", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Loading…</div>
+);
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
@@ -20,7 +30,7 @@ export default function App() {
   const [temp,      setTemp]      = useState(INITIAL_SHARED.settings);
   const [checked,   setChecked]   = useState(INITIAL_SHARED.taskChecks);
   const [tgStatus,  setTgStatus]  = useState("");
-  const [now,       setNow]       = useState(new Date());
+  const now        = useNow();
   const notifSentRef = useRef("");
   const sendDailyRef = useRef(() => {});
   const [feedLogs,  setFeedLogs]  = useState(INITIAL_SHARED.feedLogs);
@@ -45,8 +55,6 @@ export default function App() {
     },
   ]);
   const [docsError,      setDocsError]      = useState("");
-
-  useEffect(() => { const id = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(id); }, []);
 
   // ── localStorage helpers (works on any real browser/server) ──
   // Persist the normalized snapshot once on mount (also migrates legacy keys).
@@ -152,36 +160,44 @@ export default function App() {
     reader.readAsText(file);
   };
 
-  const dayAge = (() => {
+  const dayAge = useMemo(() => {
     if (!settings.startDate) return settings.chickenAge || 25;
     return (settings.chickenAge || 25) + diffCalendarDays(now, settings.startDate);
-  })();
+  }, [now, settings.startDate, settings.chickenAge]);
 
-  const feedSnapshot = getDayFeedSnapshot(dayAge, settings.numBirds || 10);
-  const tomorrowSnapshot = getDayFeedSnapshot(dayAge + 1, settings.numBirds || 10);
+  const nBirds   = settings.numBirds || 10;
+  const feedSnapshot = useMemo(() => getDayFeedSnapshot(dayAge, nBirds), [dayAge, nBirds]);
+  const tomorrowSnapshot = useMemo(() => getDayFeedSnapshot(dayAge + 1, nBirds), [dayAge, nBirds]);
   const feed     = feedSnapshot.feed;
   const lightPlan = getLightPlan(dayAge);
-  const nBirds   = settings.numBirds || 10;
   const weightRange = getWeightTarget(dayAge);
   const avgWeight = midpoint(weightRange);
   const totalG   = feedSnapshot.totalG;
   const totalWL  = feedSnapshot.totalWL;
   const sessions = feedSnapshot.sessions;
-  const tasks    = buildTasks(dayAge, nBirds);
+  const tasks    = useMemo(() => buildTasks(dayAge, nBirds), [dayAge, nBirds]);
   const pc       = phaseColor(feed.phase);
   const daysToLay = Math.max(0, 141 - dayAge);
   const layDateOffset = 141 - dayAge;
   const expectedLayDate = addCalendarDays(now, layDateOffset);
   const tomorrowPhaseChange = tomorrowSnapshot.feed.phase !== feed.phase;
 
-  const byTime = t => tasks.filter(tk => tk.time === t);
-  const pdT = byTime("Pre-Dawn");
-  const mT  = byTime("Morning");
-  const mmT = byTime("Mid-Morning");
-  const aT  = byTime("Afternoon");
-  const laT = byTime("Late-Afternoon");
-  const eT  = byTime("Evening");
-  const urgT = tasks.filter(t => t.priority === "urgent");
+  // One pass over the task list instead of seven filter() scans per render.
+  // Urgent tasks still land in their time bucket too, matching the original
+  // byTime() behaviour (the urgent banner is an extra highlight, not a move).
+  const { pdT, mT, mmT, aT, laT, eT, urgT } = useMemo(() => {
+    const buckets = { pdT: [], mT: [], mmT: [], aT: [], laT: [], eT: [], urgT: [] };
+    tasks.forEach(tk => {
+      if (tk.priority === "urgent") buckets.urgT.push(tk);
+      if (tk.time === "Pre-Dawn") buckets.pdT.push(tk);
+      else if (tk.time === "Morning") buckets.mT.push(tk);
+      else if (tk.time === "Mid-Morning") buckets.mmT.push(tk);
+      else if (tk.time === "Afternoon") buckets.aT.push(tk);
+      else if (tk.time === "Late-Afternoon") buckets.laT.push(tk);
+      else if (tk.time === "Evening") buckets.eT.push(tk);
+    });
+    return buckets;
+  }, [tasks]);
 
   // Compute global start indices for each session block
   const pdStart = 0;
@@ -1251,28 +1267,28 @@ export default function App() {
             🩺  HEALTH TAB
         ══════════════════════════════════════════════════════════════ */}
         {screen === "health" && (
-          <HealthTab />
+          <Suspense fallback={<TabFallback />}><HealthTab /></Suspense>
         )}
 
         {/* ══════════════════════════════════════════════════════════════
             🌿  GREENS TAB
         ══════════════════════════════════════════════════════════════ */}
         {screen === "greens" && (
-          <GreensTab />
+          <Suspense fallback={<TabFallback />}><GreensTab /></Suspense>
         )}
 
         {/* ══════════════════════════════════════════════════════════════
             💰  FINANCE TAB
         ══════════════════════════════════════════════════════════════ */}
         {screen === "finance" && (
-          <FinanceTab entries={financeEntries} onSave={saveFinanceEntries} readOnly={readOnly} />
+          <Suspense fallback={<TabFallback />}><FinanceTab entries={financeEntries} onSave={saveFinanceEntries} readOnly={readOnly} /></Suspense>
         )}
 
         {/* ══════════════════════════════════════════════════════════════
             🫙  FERMENTED FEED TAB
         ══════════════════════════════════════════════════════════════ */}
         {screen === "ferment" && (
-          <FermentTab dayAge={dayAge} feed={feed} />
+          <Suspense fallback={<TabFallback />}><FermentTab dayAge={dayAge} feed={feed} /></Suspense>
         )}
 
         {/* ══════════════════════════════════════════════════════════════
