@@ -313,6 +313,13 @@ export default function App() {
   };
 
   const [selectedVax, setSelectedVax] = useState(null);
+  // Vaccine guide modal: Escape closes it, like a native dialog.
+  useEffect(() => {
+    if (!selectedVax) return undefined;
+    const onKeyDown = e => { if (e.key === "Escape") setSelectedVax(null); };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedVax]);
 
   if (!authUser) {
     return (
@@ -331,12 +338,12 @@ export default function App() {
             </div>
             <div style={{ marginBottom:14 }}>
               <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginBottom:6 }}>Username</div>
-              <input type="text" value={authForm.username} onChange={e=>setAuthForm(f=>({...f, username:e.target.value}))}
+              <input type="text" aria-label="Username" value={authForm.username} onChange={e=>setAuthForm(f=>({...f, username:e.target.value}))}
                 style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:"1px solid rgba(232,119,34,0.4)", background:"rgba(255,255,255,0.05)", color:"white", fontSize:14, outline:"none", boxSizing:"border-box" }} />
             </div>
             <div style={{ marginBottom:14 }}>
               <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginBottom:6 }}>Password</div>
-              <input type="password" value={authForm.password} onChange={e=>setAuthForm(f=>({...f, password:e.target.value}))} onKeyDown={e=>{ if (e.key === "Enter") handleLogin(); }}
+              <input type="password" aria-label="Password" value={authForm.password} onChange={e=>setAuthForm(f=>({...f, password:e.target.value}))} onKeyDown={e=>{ if (e.key === "Enter") handleLogin(); }}
                 style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:"1px solid rgba(232,119,34,0.4)", background:"rgba(255,255,255,0.05)", color:"white", fontSize:14, outline:"none", boxSizing:"border-box" }} />
             </div>
             {authError && <div style={{ color:"#EF9A9A", fontSize:12, marginBottom:12 }}>{authError}</div>}
@@ -497,7 +504,7 @@ export default function App() {
             <div className="sl-birds">🐔 {nBirds} birds · Day {dayAge}</div>
           </div>
           {NAV.map(([s,icon,label])=>(
-            <button key={s} className={`app-sidebar-item${screen===s?" active":""}`} onClick={()=>setScreen(s)}>
+            <button key={s} className={`app-sidebar-item${screen===s?" active":""}`} aria-current={screen===s?"page":undefined} onClick={()=>setScreen(s)}>
               <span className="s-icon">{icon}</span> {label}
             </button>
           ))}
@@ -1301,7 +1308,7 @@ export default function App() {
         {/* ── VACCINE DETAIL MODAL ── */}
       {selectedVax && (
         <div onClick={()=>setSelectedVax(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:200, display:"flex", alignItems:"flex-end", justifyContent:"center", padding:"0" }}>
-          <div onClick={e=>e.stopPropagation()} style={{ background:"#1a0a00", border:`1px solid ${selectedVax.color}55`, borderRadius:"20px 20px 0 0", width:"100%", maxWidth:680, maxHeight:"88vh", overflowY:"auto", padding:"0 0 32px 0" }}>
+          <div role="dialog" aria-modal="true" aria-label={`Day ${selectedVax.day} vaccination guide`} onClick={e=>e.stopPropagation()} style={{ background:"#1a0a00", border:`1px solid ${selectedVax.color}55`, borderRadius:"20px 20px 0 0", width:"100%", maxWidth:680, maxHeight:"88vh", overflowY:"auto", padding:"0 0 32px 0" }}>
             {/* Modal header */}
             <div style={{ background:`linear-gradient(135deg,${selectedVax.color},${selectedVax.color}99)`, padding:"20px 20px 16px", borderRadius:"20px 20px 0 0", position:"sticky", top:0, zIndex:10 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
@@ -1310,7 +1317,7 @@ export default function App() {
                   <div style={{ fontSize:17, fontWeight:"bold", color:"white", lineHeight:1.3 }}>{selectedVax.vaccine}</div>
                   <div style={{ fontSize:12, color:"rgba(255,255,255,0.75)", marginTop:4 }}>Protection: {selectedVax.disease}</div>
                 </div>
-                <button onClick={()=>setSelectedVax(null)} style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"white", width:32, height:32, borderRadius:"50%", cursor:"pointer", fontSize:16, flexShrink:0 }}>✕</button>
+                <button onClick={()=>setSelectedVax(null)} aria-label="Close vaccination guide" style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"white", width:32, height:32, borderRadius:"50%", cursor:"pointer", fontSize:16, flexShrink:0 }}>✕</button>
               </div>
             </div>
 
@@ -1402,8 +1409,8 @@ export default function App() {
     {/* Bottom nav — mobile only */}
     <nav className="app-bottomnav">
       {NAV.map(([s,icon,label])=>(
-        <button key={s} className={`app-bottomnav-item${screen===s?" active":""}`} onClick={()=>setScreen(s)}>
-          <span className="nav-icon">{icon}</span>
+        <button key={s} className={`app-bottomnav-item${screen===s?" active":""}`} aria-current={screen===s?"page":undefined} aria-label={label} onClick={()=>setScreen(s)}>
+          <span className="nav-icon" aria-hidden="true">{icon}</span>
           <span className="nav-label">{label}</span>
         </button>
       ))}

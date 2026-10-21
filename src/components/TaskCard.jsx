@@ -4,6 +4,11 @@ function TaskCard({ t, globalIdx, dayAge, checked, onToggle, readOnly }) {
   const priBg    = { urgent:"rgba(239,83,80,0.12)", high:"rgba(255,183,77,0.08)", medium:"transparent", low:"transparent" }[t.priority] || "transparent";
   return (
     <div onClick={() => !readOnly && onToggle(globalIdx)}
+      role={readOnly ? undefined : "checkbox"}
+      aria-checked={done}
+      aria-label={t.task}
+      tabIndex={readOnly ? undefined : 0}
+      onKeyDown={readOnly ? undefined : e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(globalIdx); } }}
       style={{ background: done ? "rgba(255,255,255,0.015)" : priBg, border:`1px solid ${done?"rgba(255,255,255,0.05)":t.priority==="urgent"?"rgba(239,83,80,0.3)":t.priority==="high"?"rgba(255,183,77,0.15)":"rgba(255,255,255,0.07)"}`, borderRadius:10, padding:"11px 13px", marginBottom:6, cursor:readOnly?"default":"pointer", opacity:done?0.4:1, transition:"all 0.15s", display:"flex", gap:10, alignItems:"flex-start" }}>
       <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${done?"#E87722":priColor}`, background:done?"#E87722":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1, transition:"all 0.15s" }}>
         {done && <span style={{ fontSize:12, color:"white", fontWeight:"bold" }}>✓</span>}
