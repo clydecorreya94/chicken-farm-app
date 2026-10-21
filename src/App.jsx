@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // ─── Responsive CSS ────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -947,6 +947,32 @@ function loadSharedData(read) {
   });
 }
 
+// ── localStorage helpers (module scope so first render can hydrate synchronously) ──
+const lsGet = key => {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : null;
+  } catch (err) {
+    console.warn(`Could not read "${key}" from localStorage:`, err);
+    return null;
+  }
+};
+const lsSet = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (err) {
+    console.warn(`Could not write "${key}" to localStorage:`, err);
+  }
+};
+
+// Hydrate once at module load (client-only app) instead of in a render effect.
+const INITIAL_SHARED = loadSharedData(lsGet);
+const INITIAL_SESSION = (() => {
+  const session = lsGet(SESSION_KEY);
+  const user = session?.username ? AUTH_USERS[session.username] : null;
+  return user ? { username: user.username, role: user.role, label: user.label } : null;
+})();
+
 // ─── Feed Store Helpers ───────────────────────────────────────────────────────
 
 // Kerala market price estimates per kg (INR) — user can override
@@ -1157,7 +1183,7 @@ const SYMPTOM_CHECKLIST = [
   { q:"Pale comb + gradual weight loss?", disease:["worms","mites_lice","coccidiosis"] },
 ];
 
-function HealthTab({ dayAge, nBirds }) {
+function HealthTab() {
   const [mode, setMode] = useState("checker"); // checker | browse | detail
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [detailId, setDetailId] = useState(null);
@@ -1455,13 +1481,6 @@ function FinanceTab({ entries, onSave, readOnly }) {
   const activeCategories = formType === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
   const canSave = !readOnly && !!form.date && Number.isFinite(amountValue) && amountValue > 0;
 
-  useEffect(() => {
-    setForm(current => {
-      if (activeCategories.includes(current.category)) return current;
-      return { ...current, category: getDefaultCategory(formType) };
-    });
-  }, [activeCategories, formType]);
-
   const addEntry = event => {
     event?.preventDefault();
     if (readOnly) return;
@@ -1647,9 +1666,6 @@ function FinanceTab({ entries, onSave, readOnly }) {
 // 🫙  FERMENTED FEED TAB
 // ═══════════════════════════════════════════════════════════════════════════
 function FermentTab({ dayAge, feed }) {
-  const isGrower = dayAge >= 43;
-  const isPreLayer = dayAge >= 121;
-  const isLayer = dayAge >= 141;
   const recommended = dayAge >= 43;
 
   return (
@@ -2095,22 +2111,22 @@ function SessionBlock({ label, color, tasks, startIdx, dayAge, checked, onToggle
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [screen,    setScreen]    = useState("setup");
+  const [screen,    setScreen]    = useState(() => (!INITIAL_SHARED.settings.setupDone ? "setup" : (INITIAL_SHARED.cages.length ? "dashboard" : "cagegate")));
   const [step,      setStep]      = useState(1);
-  const [settings,  setSettings]  = useState(DEFAULT_SETTINGS);
-  const [temp,      setTemp]      = useState(DEFAULT_TEMP);
+  const [settings,  setSettings]  = useState(INITIAL_SHARED.settings);
+  const [temp,      setTemp]      = useState(INITIAL_SHARED.settings);
   const [checked,   setChecked]   = useState({});
   const [tgStatus,  setTgStatus]  = useState("");
   const [now,       setNow]       = useState(new Date());
-  const [notifSent, setNotifSent] = useState("");
-  const [feedLogs,  setFeedLogs]  = useState([]);
-  const [buyAlertDismissed, setBuyAlertDismissed] = useState({});
-  const [financeEntries, setFinanceEntries] = useState([]);
-  const [cages, setCages] = useState([]);
-  const [authUser, setAuthUser] = useState(null);
+  const notifSentRef = useRef("");
+  const sendDailyRef = useRef(() => {});
+  const [feedLogs,  setFeedLogs]  = useState(INITIAL_SHARED.feedLogs);
+  const [buyAlertDismissed, setBuyAlertDismissed] = useState(INITIAL_SHARED.buyAlertDismissed);
+  const [financeEntries, setFinanceEntries] = useState(INITIAL_SHARED.finance);
+  const [cages, setCages] = useState(INITIAL_SHARED.cages);
+  const [authUser, setAuthUser] = useState(INITIAL_SESSION);
   const [authForm, setAuthForm] = useState({ username: "", password: "" });
   const [authError, setAuthError] = useState("");
-  const [hydrated, setHydrated] = useState(false);
   // Feed tab states — must be at top level (React rules)
   const [showAddForm,    setShowAddForm]    = useState(false);
   const [showCalc,       setShowCalc]       = useState(false);
@@ -2130,25 +2146,9 @@ export default function App() {
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(id); }, []);
 
   // ── localStorage helpers (works on any real browser/server) ──
-  const lsGet = key => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; } };
-  const lsSet = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };
-
+  // Persist the normalized snapshot once on mount (also migrates legacy keys).
   useEffect(() => {
-    const shared = loadSharedData(lsGet);
-    const session = lsGet(SESSION_KEY);
-    setSettings(shared.settings);
-    setTemp(shared.settings);
-    setFeedLogs(shared.feedLogs);
-    setBuyAlertDismissed(shared.buyAlertDismissed);
-    setFinanceEntries(shared.finance);
-    setCages(shared.cages);
-    lsSet(SHARED_DATA_KEY, shared);
-    if (session?.username && AUTH_USERS[session.username]) {
-      const user = AUTH_USERS[session.username];
-      setAuthUser({ username: user.username, role: user.role, label: user.label });
-    }
-    setScreen(!shared.settings?.setupDone ? "setup" : (shared.cages.length ? "dashboard" : "cagegate"));
-    setHydrated(true);
+    lsSet(SHARED_DATA_KEY, INITIAL_SHARED);
   }, []);
 
   const persistAll = useCallback(next => {
@@ -2254,6 +2254,8 @@ export default function App() {
   };
 
   const sendDaily = () => sendTg(buildTelegram(dayAge, nBirds, tasks, feed));
+  // Keep the latest sender in a ref so the scheduling effect below has stable deps.
+  useEffect(() => { sendDailyRef.current = sendDaily; });
   const sendTest  = () => sendTg(`✅ *BV-380 Farm Bot Connected!*\n\nFarm tracker running.\n🐔 ${settings.numBirds} birds | Day ${dayAge}\n⏰ Daily at ${settings.notifyTime}\n\n_Kerala Clyde's BV380 Farm Manager 🌴_`);
 
   const askDocsAssistant = async () => {
@@ -2286,12 +2288,31 @@ export default function App() {
     ]);
   };
 
+  // Schedule the daily Telegram send as a self-re-arming timer (an external
+  // subscription), instead of checking the clock synchronously in an effect.
   useEffect(() => {
-    if (!settings.botToken || !settings.chatId || !settings.setupDone) return;
-    const [h,m] = settings.notifyTime.split(":").map(Number);
-    const key = now.toDateString();
-    if (now.getHours()===h && now.getMinutes()===m && notifSent !== key) { setNotifSent(key); sendDaily(); }
-  }, [now]);
+    if (!settings.botToken || !settings.chatId || !settings.setupDone) return undefined;
+    const [h, m] = settings.notifyTime.split(":").map(Number);
+    if (!Number.isInteger(h) || !Number.isInteger(m) || h < 0 || h > 23 || m < 0 || m > 59) return undefined;
+
+    const msUntilNext = from => {
+      const target = new Date(from);
+      target.setHours(h, m, 0, 0);
+      if (target.getTime() <= from.getTime()) target.setDate(target.getDate() + 1);
+      return target.getTime() - from.getTime();
+    };
+
+    let timer = setTimeout(function run() {
+      const key = new Date().toDateString();
+      if (notifSentRef.current !== key) {
+        notifSentRef.current = key;
+        sendDailyRef.current();
+      }
+      timer = setTimeout(run, msUntilNext(new Date()));
+    }, msUntilNext(new Date()));
+
+    return () => clearTimeout(timer);
+  }, [settings.botToken, settings.chatId, settings.notifyTime, settings.setupDone]);
 
   const saveS = patch => { const s = {...settings, ...patch}; setSettings(s); persist(s); };
   const finishSetup = () => { const s = {...temp, setupDone:true, startDate:toDateInputValue()}; setSettings(s); persist(s); setScreen(cages.length ? "dashboard" : "cagegate"); };
@@ -2316,15 +2337,6 @@ export default function App() {
   };
 
   const [selectedVax, setSelectedVax] = useState(null);
-
-  if (!hydrated) {
-    return (
-      <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#0a0500", color:"rgba(255,255,255,0.7)", fontFamily:"'DM Sans',sans-serif" }}>
-        <StyleInjector />
-        Loading farm data...
-      </div>
-    );
-  }
 
   if (!authUser) {
     return (
@@ -3266,7 +3278,7 @@ export default function App() {
             🩺  HEALTH TAB
         ══════════════════════════════════════════════════════════════ */}
         {screen === "health" && (
-          <HealthTab dayAge={dayAge} nBirds={nBirds} />
+          <HealthTab />
         )}
 
         {/* ══════════════════════════════════════════════════════════════
