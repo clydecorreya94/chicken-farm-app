@@ -39,6 +39,7 @@ function normalizeSharedData(raw) {
     buyAlertDismissed: raw?.buyAlertDismissed && typeof raw.buyAlertDismissed === "object" ? raw.buyAlertDismissed : {},
     finance: Array.isArray(raw?.finance) ? raw.finance : [],
     cages: Array.isArray(raw?.cages) ? raw.cages.map(normalizeCage) : [],
+    taskChecks: raw?.taskChecks && typeof raw.taskChecks === "object" ? raw.taskChecks : {},
   };
 }
 

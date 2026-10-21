@@ -18,7 +18,7 @@ export default function App() {
   const [step,      setStep]      = useState(1);
   const [settings,  setSettings]  = useState(INITIAL_SHARED.settings);
   const [temp,      setTemp]      = useState(INITIAL_SHARED.settings);
-  const [checked,   setChecked]   = useState({});
+  const [checked,   setChecked]   = useState(INITIAL_SHARED.taskChecks);
   const [tgStatus,  setTgStatus]  = useState("");
   const [now,       setNow]       = useState(new Date());
   const notifSentRef = useRef("");
@@ -60,25 +60,25 @@ export default function App() {
 
   const saveFeedLogs = logs => {
     setFeedLogs(logs);
-    persistAll({ settings, feedLogs: logs, buyAlertDismissed, finance: financeEntries, cages });
+    persistAll({ settings, feedLogs: logs, buyAlertDismissed, finance: financeEntries, cages, taskChecks: checked });
   };
   const saveBuyAlerts = obj => {
     setBuyAlertDismissed(obj);
-    persistAll({ settings, feedLogs, buyAlertDismissed: obj, finance: financeEntries, cages });
+    persistAll({ settings, feedLogs, buyAlertDismissed: obj, finance: financeEntries, cages, taskChecks: checked });
   };
   const saveFinanceEntries = list => {
     setFinanceEntries(list);
     lsSet("bv380_finance", list);
-    persistAll({ settings, feedLogs, buyAlertDismissed, finance: list, cages });
+    persistAll({ settings, feedLogs, buyAlertDismissed, finance: list, cages, taskChecks: checked });
   };
   const saveCages = list => {
     setCages(list);
-    persistAll({ settings, feedLogs, buyAlertDismissed, finance: financeEntries, cages: list });
+    persistAll({ settings, feedLogs, buyAlertDismissed, finance: financeEntries, cages: list, taskChecks: checked });
   };
   const persist = useCallback(s => {
     setSettings(s);
-    persistAll({ settings: s, feedLogs, buyAlertDismissed, finance: financeEntries, cages });
-  }, [feedLogs, buyAlertDismissed, financeEntries, cages, persistAll]);
+    persistAll({ settings: s, feedLogs, buyAlertDismissed, finance: financeEntries, cages, taskChecks: checked });
+  }, [feedLogs, buyAlertDismissed, financeEntries, cages, checked, persistAll]);
   const canEdit = authUser?.role === "admin";
   const readOnly = !canEdit;
 
@@ -97,6 +97,7 @@ export default function App() {
     setBuyAlertDismissed({});
     setFinanceEntries([]);
     setCages([]);
+    setChecked({});
     setScreen("setup"); setStep(1);
   };
 
@@ -142,7 +143,12 @@ export default function App() {
   const prog  = tasks.length ? Math.round((done/tasks.length)*100) : 0;
   const toggle = i => {
     if (readOnly) return;
-    setChecked(p => ({ ...p, [`${dayAge}_${i}`]: !p[`${dayAge}_${i}`] }));
+    const key = `${dayAge}_${i}`;
+    const next = { ...checked, [key]: !checked[key] };
+    // Prune checkmarks from other days — only today's progress matters.
+    const pruned = Object.fromEntries(Object.entries(next).filter(([k]) => k.startsWith(`${dayAge}_`)));
+    setChecked(pruned);
+    persistAll({ settings, feedLogs, buyAlertDismissed, finance: financeEntries, cages, taskChecks: pruned });
   };
 
   const sendTg = async msg => {
