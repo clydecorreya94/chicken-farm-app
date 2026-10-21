@@ -4,7 +4,7 @@ import { BV380_REFERENCE_DOCS, searchDocKnowledge, buildLocalDocAnswer } from ".
 import { diffCalendarDays, addCalendarDays, formatLongDate, formatShortDate, toDateInputValue } from "./lib/dates";
 import { getFeed, getLightPlan, getWeightTarget, midpoint, formatWeightRange, phaseColor, getDayFeedSnapshot, buildFeedPlan, calcRemainingStock, daysLeftInPhase, FEED_PRICE_ESTIMATES } from "./lib/feed";
 import { buildTasks, buildTelegram } from "./lib/tasks";
-import { SHARED_DATA_KEY, SESSION_KEY, DEFAULT_SETTINGS, DEFAULT_TEMP, AUTH_USERS, normalizeSharedData, lsSet, INITIAL_SHARED, INITIAL_SESSION } from "./lib/storage";
+import { SHARED_DATA_KEY, SESSION_KEY, SCHEMA_VERSION, DEFAULT_SETTINGS, DEFAULT_TEMP, AUTH_USERS, normalizeSharedData, lsSet, INITIAL_SHARED, INITIAL_SESSION } from "./lib/storage";
 import HealthTab from "./components/HealthTab";
 import GreensTab from "./components/GreensTab";
 import FinanceTab from "./components/FinanceTab";
@@ -99,6 +99,57 @@ export default function App() {
     setCages([]);
     setChecked({});
     setScreen("setup"); setStep(1);
+  };
+
+  const importFileRef = useRef(null);
+  const [backupNotice, setBackupNotice] = useState("");
+
+  const handleExport = () => {
+    const payload = {
+      app: "bv380-farm-manager",
+      schemaVersion: SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      data: normalizeSharedData({ settings, feedLogs, buyAlertDismissed, finance: financeEntries, cages, taskChecks: checked }),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bv380-backup-${toDateInputValue()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setBackupNotice("Backup downloaded.");
+  };
+
+  const handleImportFile = event => {
+    const file = event.target.files?.[0];
+    event.target.value = ""; // allow re-picking the same file
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const data = parsed && parsed.app === "bv380-farm-manager" ? parsed.data : parsed;
+        if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Not a farm backup file");
+        if (!window.confirm("Import this backup? It replaces ALL current farm data on this device.")) return;
+        const clean = normalizeSharedData(data);
+        persistAll(clean);
+        setSettings(clean.settings);
+        setTemp(clean.settings);
+        setFeedLogs(clean.feedLogs);
+        setBuyAlertDismissed(clean.buyAlertDismissed);
+        setFinanceEntries(clean.finance);
+        setCages(clean.cages);
+        setChecked(clean.taskChecks);
+        lsSet("bv380_finance", clean.finance);
+        setBackupNotice("Backup imported successfully.");
+      } catch (err) {
+        console.warn("Backup import failed:", err);
+        setBackupNotice("Import failed — the file is not a valid backup.");
+      }
+    };
+    reader.onerror = () => setBackupNotice("Import failed — the file could not be read.");
+    reader.readAsText(file);
   };
 
   const dayAge = (() => {
@@ -1151,6 +1202,24 @@ export default function App() {
               </div>
               <div style={{ fontSize:12, color:"#A5D6A7", background:"rgba(46,125,50,0.15)", borderRadius:8, padding:"8px 12px" }}>
                 ✅ Current calculated age: <b>Day {dayAge}</b>
+              </div>
+            </div>
+
+            {/* Backup & restore */}
+            <div style={{ background:"rgba(46,125,50,0.07)", border:"1px solid rgba(46,125,50,0.25)", borderRadius:12, padding:16, marginBottom:12 }}>
+              <div style={{ fontSize:12, color:"#A5D6A7", fontWeight:700, marginBottom:6 }}>💾 Backup & Restore</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.45)", marginBottom:12, lineHeight:1.7 }}>
+                Download a JSON backup of all farm data (settings, feed logs, finance, cages). Import it on any device to restore.
+              </div>
+              {backupNotice && <div style={{ fontSize:11, color:"#FFB74D", marginBottom:10 }}>{backupNotice}</div>}
+              <div style={{ display:"flex", gap:8 }}>
+                <button onClick={handleExport} style={{ flex:1, padding:11, background:"rgba(46,125,50,0.18)", color:"#A5D6A7", border:"1px solid rgba(46,125,50,0.4)", borderRadius:10, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                  ⬇️ Export Backup
+                </button>
+                <button onClick={() => importFileRef.current?.click()} disabled={readOnly} style={{ flex:1, padding:11, background:"rgba(25,118,210,0.15)", color:"#90CAF9", border:"1px solid rgba(25,118,210,0.4)", borderRadius:10, fontSize:13, fontWeight:700, cursor:readOnly?"not-allowed":"pointer", fontFamily:"'DM Sans',sans-serif", opacity:readOnly?0.55:1 }}>
+                  ⬆️ Import Backup
+                </button>
+                <input ref={importFileRef} type="file" accept="application/json,.json" onChange={handleImportFile} style={{ display:"none" }} />
               </div>
             </div>
 

@@ -32,8 +32,12 @@ function normalizeCage(raw, index) {
   };
 }
 
+// Bump when the persisted shape changes; loadSharedData migrates old blobs.
+const SCHEMA_VERSION = 1;
+
 function normalizeSharedData(raw) {
   return {
+    schemaVersion: SCHEMA_VERSION,
     settings: { ...DEFAULT_SETTINGS, ...(raw?.settings || {}) },
     feedLogs: Array.isArray(raw?.feedLogs) ? raw.feedLogs : [],
     buyAlertDismissed: raw?.buyAlertDismissed && typeof raw.buyAlertDismissed === "object" ? raw.buyAlertDismissed : {},
@@ -45,7 +49,10 @@ function normalizeSharedData(raw) {
 
 function loadSharedData(read) {
   const shared = read(SHARED_DATA_KEY);
-  if (shared) return normalizeSharedData(shared);
+  if (shared) {
+    // Future migrations: switch on (shared.schemaVersion || 0) here before normalizing.
+    return normalizeSharedData(shared);
+  }
   return normalizeSharedData({
     settings: read("bv380_settings") || DEFAULT_SETTINGS,
     feedLogs: read("bv380_feedlogs") || [],
@@ -81,4 +88,4 @@ const INITIAL_SESSION = (() => {
   return user ? { username: user.username, role: user.role, label: user.label } : null;
 })();
 
-export { SHARED_DATA_KEY, SESSION_KEY, DEFAULT_SETTINGS, DEFAULT_TEMP, AUTH_USERS, normalizeSharedData, loadSharedData, lsGet, lsSet, INITIAL_SHARED, INITIAL_SESSION };
+export { SHARED_DATA_KEY, SESSION_KEY, SCHEMA_VERSION, DEFAULT_SETTINGS, DEFAULT_TEMP, AUTH_USERS, normalizeSharedData, loadSharedData, lsGet, lsSet, INITIAL_SHARED, INITIAL_SESSION };
