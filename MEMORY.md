@@ -5,46 +5,42 @@ _Last updated: 2026-10-26_
 ## Profile
 
 - React 19 + Vite 7 single-page app for managing a small BV380 layer flock (phone/desktop, Kerala conditions).
-- Almost all logic lives in one file: `src/App.jsx` (~3,420 lines) — data tables, helpers, ~12 components, and a large inline `GLOBAL_CSS` string injected via `StyleInjector`.
-- Auth: hardcoded client-side accounts (`admin123`/`admin123`, `guest`/`guest123`); admin edits, guest read-only. Session in `localStorage` (`bv380_session`), no expiry.
-- Data: single normalized blob in `localStorage` key `bv380_shared_data` (settings, feedLogs, buyAlertDismissed, finance, cages), read once at module load into `INITIAL_SHARED`/`INITIAL_SESSION`. Legacy keys (`bv380_settings`, `bv380_feedlogs`, `bv380_buyalerts`, `bv380_finance`, `bv380_cages`) still migrate on first load; `bv380_finance` is mirrored on save.
-- Telegram daily-notification: browser-side scheduler effect that self-rearms a `setTimeout` to the configured `notifyTime`, sender held in `sendDailyRef`; README notes it only works while the tab stays open.
-- Deploy: `./deploy.sh` → npm install/build, copies `dist/` to `/var/www/farm/`, `nginx -t`, reload. Hardcoded `APP_ROOT=/home/clyde/chicken-farm-app`; site at `http://192.168.0.122:8080/`.
+- **Split structure** (was one 3,420-line file): `src/App.jsx` (~1,420 lines, shell + shared state + a few screens), `src/components/` (Cages/Ferment/Finance/Greens/Health/TaskCard/ErrorBoundary), `src/data/` (docs, greens, health, schedule), `src/lib/` (dates, feed, storage, tasks, useNow). `GLOBAL_CSS` lives in `src/index.css`; no Google Fonts network `@import`.
+- Auth: hardcoded client-side accounts (`admin123`/`admin123`, `guest`/`guest123`); admin edits, guest read-only. Session in `localStorage` (`bv380_session`), no expiry. **Accepted trade-off, documented in README "Security Notes"** — it only gates the UI.
+- Data: single normalized blob in `localStorage` key `bv380_shared_data` (schemaVersion 1: settings, feedLogs, buyAlertDismissed, finance, cages, taskChecks), read once at module load into `INITIAL_SHARED`/`INITIAL_SESSION`. Legacy keys (`bv380_settings`, `bv380_feedlogs`, `bv380_buyalerts`, `bv380_finance`, `bv380_cages`) still migrate on first load; `bv380_finance` is mirrored on save. JSON export/import of the blob exists in Settings.
+- Telegram daily-notification: browser-side scheduler effect that self-rearms a `setTimeout` to the configured `notifyTime` (gates on `chatId` + proxy/token), sender held in `sendDailyRef`; only works while the tab stays open. **Sends prefer the `tgProxyUrl` Cloudflare Worker** (`POST <proxy>/send`, token lives only in the Worker's `TELEGRAM_BOT_TOKEN` secret); legacy direct `api.telegram.org` call remains as fallback when only `botToken`+`chatId` are set.
+- Deploy: `./deploy.sh` → npm install/build, copies `dist/` to `/var/www/farm/`, `nginx -t`, reload. Hardcoded `APP_ROOT=/home/clyde/chicken-farm-app`; site at `http://192.168.0.122:8080/`. `/var/www/farm` is root/www-data-owned — **deploy.sh needs an interactive sudo password** (cannot run unattended from a session here).
+- PWA: `public/sw.js` registered in production (`src/main.jsx`), manifest + `favicon.svg`, real title/meta description/theme-color in `index.html`.
 
 ## Verification commands
 
-- `npm run lint` (eslint .) — **passes clean, 0 errors 0 warnings** (as of 2026-10-19).
-- `npm run build` — passes; single chunk ~385 kB (111 kB gzip).
-- No test suite exists (no test files in repo).
+- `npm run lint` (eslint .) — **clean, 0 errors 0 warnings** (as of 2026-10-26).
+- `npm run build` — passes; main chunk 334 kB (97 kB gzip) + lazy tab chunks.
+- No test suite in repo. Ad-hoc Worker smoke test (Node, stubbed `fetch`, 7 checks) was run once for `cloudflare/worker.js`; file was temporary and not committed.
 
 ## Session state (2026-10-26)
 
-- Backlog #3 (security) implemented, decisions from user: **Cloudflare Worker** proxy for Telegram, credentials **kept as-is + documented only**:
-  - New `cloudflare/` Worker (`worker.js` + `wrangler.toml` + README): `POST /send` with `{chat_id, text, parse_mode}` holds `TELEGRAM_BOT_TOKEN` as a Wrangler secret, `GET /health`, CORS via `ALLOWED_ORIGIN` var. **Not deployed** — needs `npx wrangler login` + `secret put` + `deploy`.
-  - `tgProxyUrl` setting added to `DEFAULT_SETTINGS`/`DEFAULT_TEMP`; `sendTg` posts to `<proxy>/send` when set, falls back to direct `api.telegram.org` when only `botToken`+`chatId` exist; scheduler guard/deps updated for proxy-only setups (gate is `chatId`, not `botToken`).
-  - Setup wizard + Settings → Telegram panels gained a Proxy URL field; README gained a "Security Notes" section stating the plaintext-credentials trade-off.
-- Backlog #8 (CI workflow + atomic symlink deploy.sh) still open — scope choice was "security only".
-- Verification: `npm run lint` clean, `npm run build` passes (334 kB / 97 kB gzip), Node smoke-test of the Worker handler passed (7 checks, fetch stubbed); UI seen via `npm run preview` at http://192.168.0.122:4173/.
+- Backlog **#3 (security)** implemented — user decisions: **Cloudflare Worker** proxy for Telegram; credentials **kept as-is, documented only**.
+  - New `cloudflare/` (`worker.js` + `wrangler.toml` + README): `POST /send` with `{chat_id, text, parse_mode}` → Telegram; `GET /health`; CORS via `ALLOWED_ORIGIN` var; token only via Wrangler secret. **Not deployed** — needs `npx wrangler login` + `secret put TELEGRAM_BOT_TOKEN` + `deploy` in `cloudflare/`.
+  - `tgProxyUrl` in `DEFAULT_SETTINGS`/`DEFAULT_TEMP`; `sendTg` uses `<proxy>/send` when set; scheduler gate is `chatId` (proxy-only setups have no token in the browser); Proxy URL field added in setup wizard + Settings → Telegram; README gained "Security Notes".
+- **Committed as `754812f` "Route Telegram sends through a Cloudflare Worker proxy"** (7 files, +204/−16). Working tree clean. **Push left to the user** (`git push` from `/home/clyde/chicken-farm-app`) — not pushed yet as of this writing.
+- Verified: lint clean, build exit 0 (pipefail), full `git diff` review (one line-break glitch fixed pre-commit), no secrets in diff, Worker smoke test passed.
+- UI inspected via `npm run preview -- --host 0.0.0.0 --port 4173` → http://192.168.0.122:4173/ (background PID 12301, may still be running — ask user before killing).
+- Permanent deploy to :8080 not done (sudo password required).
+- **Backlog #8 still open** (user chose "security only" scope): GitHub Actions lint+build workflow; `deploy.sh` atomic symlink swap instead of `rm -rf` copy.
 
-## Session state (2026-10-19)
+## Session state (2026-10-19) — landed in commit `32bd1b0`
 
-- Fixed all 9 lint errors + 1 warning in `src/App.jsx`; **changes are uncommitted** (`git status`: modified `src/App.jsx`, +67/-55).
-  - Removed unused `HealthTab` params (`dayAge`, `nBirds`) and dead `isGrower`/`isPreLayer`/`isLayer` in `FermentTab`.
-  - Moved `lsGet`/`lsSet` to module scope; empty `catch` now logs via `console.warn`.
-  - Replaced localStorage-hydration effect with module-load init (`INITIAL_SHARED`/`INITIAL_SESSION`); removed `hydrated` flag/loading screen; a mount effect persists the normalized snapshot for legacy-key migration.
-  - Deleted dead FinanceTab category-sync effect (the only `setFormType` site already resets `form.category`).
-  - Rewrote notification effect as a self-rearming `setTimeout` at exact `notifyTime` with `notifSentRef` guard — intentional behavior change: fires at the exact minute instead of matching a 60s clock tick.
-  - No eslint-disable comments or rule weakenings were used.
-- Not runtime-tested in a browser (no Chrome in this environment); login → dashboard → Telegram flow rests on code analysis.
+- Fixed 9 lint errors + 1 warning in `src/App.jsx` (unused params/dead code, module-scope storage helpers, module-load hydration instead of an effect, dead FinanceTab effect removed, self-rearming notification `setTimeout` with `notifSentRef` — fires at the exact `notifyTime`, not on a 60s tick). No eslint-disables or weakened rules.
 
-## Improvement backlog (user interested; none implemented yet)
+## Improvement backlog — status
 
-1. Split `src/App.jsx` into `src/data/`, `src/lib/`, `src/components/`.
-2. Move `GLOBAL_CSS` string into `src/index.css`/`App.css`; drop Google Fonts `@import` (breaks offline claim).
-3. ~~Security: Telegram bot token~~ — done 2026-10-26 (Cloudflare Worker proxy in `cloudflare/`, deploy pending). Hardcoded/plaintext credentials intentionally kept: documented in README "Security Notes" instead.
-4. Persist task checkmarks (`checked` state is in-memory only, keyed by fragile `${dayAge}_${i}` index).
-5. JSON export/import backup for farm data; storage schema versioning.
-6. PWA (manifest + service worker), local `Notification` API fallback, error boundary, accessibility (labels/aria/focus trap).
-7. Perf: memoize derived task/feed-plan lists, `React.lazy` tab code-splitting, extract the 60s clock into `useNow()`.
+Done (committed): **#1** split `App.jsx` (`e4666d2`) · **#2** CSS to `index.css`, drop Google Fonts (`d71076d`) · **#4** persist task checkmarks (`45e072c`) · **#5** JSON backup + schema versioning (`050842e`) · **#7** memoized buckets, `React.lazy` tabs, `useNow()` (`bf0715a`) · **#9** index.html title/favicon/meta (`61d6473`) · **#3** Telegram token proxy + auth docs (`754812f`, Worker deploy pending).
+
+Partially done:
+
+6. PWA + error boundary + a11y shipped (`20004c1`); **local `Notification` API fallback not implemented**.
+
+Open:
+
 8. CI (lint + build workflow); `deploy.sh` hardcoded path and non-atomic `rm -rf` copy → symlink swap.
-9. `index.html`: title still `chicken-farm-app`, `vite.svg` favicon, no meta description/theme-color.
