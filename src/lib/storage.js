@@ -7,6 +7,9 @@ const DEFAULT_SETTINGS = {
   chickenAge:25,
   botToken:"",
   chatId:"",
+  // URL of the Cloudflare Worker that holds the bot token (see cloudflare/).
+  // Empty = legacy direct-to-Telegram fallback.
+  tgProxyUrl:"",
   notifyTime:"08:00",
   setupDone:false,
   startDate:null,
@@ -16,6 +19,7 @@ const DEFAULT_TEMP = {
   chickenAge:25,
   botToken:"",
   chatId:"",
+  tgProxyUrl:"",
   notifyTime:"08:00",
 };
 const AUTH_USERS = {

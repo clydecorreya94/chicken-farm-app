@@ -1,0 +1,11 @@
+name = "bv380-telegram-proxy"
+main = "worker.js"
+compatibility_date = "2026-10-26"
+
+# CORS origin. Tighten this to the farm app URL once you know the Worker domain:
+#   ALLOWED_ORIGIN = "http://192.168.0.122:8080"
+[vars]
+ALLOWED_ORIGIN = "*"
+
+# The bot token is a secret and must NOT be added here:
+#   npx wrangler secret put TELEGRAM_BOT_TOKEN

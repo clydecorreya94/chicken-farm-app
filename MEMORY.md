@@ -1,6 +1,6 @@
 # Project Memory — Chicken Farm App (BV380 Farm Manager)
 
-_Last updated: 2026-10-19_
+_Last updated: 2026-10-26_
 
 ## Profile
 
@@ -17,6 +17,15 @@ _Last updated: 2026-10-19_
 - `npm run build` — passes; single chunk ~385 kB (111 kB gzip).
 - No test suite exists (no test files in repo).
 
+## Session state (2026-10-26)
+
+- Backlog #3 (security) implemented, decisions from user: **Cloudflare Worker** proxy for Telegram, credentials **kept as-is + documented only**:
+  - New `cloudflare/` Worker (`worker.js` + `wrangler.toml` + README): `POST /send` with `{chat_id, text, parse_mode}` holds `TELEGRAM_BOT_TOKEN` as a Wrangler secret, `GET /health`, CORS via `ALLOWED_ORIGIN` var. **Not deployed** — needs `npx wrangler login` + `secret put` + `deploy`.
+  - `tgProxyUrl` setting added to `DEFAULT_SETTINGS`/`DEFAULT_TEMP`; `sendTg` posts to `<proxy>/send` when set, falls back to direct `api.telegram.org` when only `botToken`+`chatId` exist; scheduler guard/deps updated for proxy-only setups (gate is `chatId`, not `botToken`).
+  - Setup wizard + Settings → Telegram panels gained a Proxy URL field; README gained a "Security Notes" section stating the plaintext-credentials trade-off.
+- Backlog #8 (CI workflow + atomic symlink deploy.sh) still open — scope choice was "security only".
+- Verification: `npm run lint` clean, `npm run build` passes (334 kB / 97 kB gzip), Node smoke-test of the Worker handler passed (7 checks, fetch stubbed); UI seen via `npm run preview` at http://192.168.0.122:4173/.
+
 ## Session state (2026-10-19)
 
 - Fixed all 9 lint errors + 1 warning in `src/App.jsx`; **changes are uncommitted** (`git status`: modified `src/App.jsx`, +67/-55).
@@ -32,7 +41,7 @@ _Last updated: 2026-10-19_
 
 1. Split `src/App.jsx` into `src/data/`, `src/lib/`, `src/components/`.
 2. Move `GLOBAL_CSS` string into `src/index.css`/`App.css`; drop Google Fonts `@import` (breaks offline claim).
-3. Security: hardcoded/plaintext credentials; Telegram bot token stored in `localStorage` and called directly from browser (exposable) — proxy via backend.
+3. ~~Security: Telegram bot token~~ — done 2026-10-26 (Cloudflare Worker proxy in `cloudflare/`, deploy pending). Hardcoded/plaintext credentials intentionally kept: documented in README "Security Notes" instead.
 4. Persist task checkmarks (`checked` state is in-memory only, keyed by fragile `${dayAge}_${i}` index).
 5. JSON export/import backup for farm data; storage schema versioning.
 6. PWA (manifest + service worker), local `Notification` API fallback, error boundary, accessibility (labels/aria/focus trap).

@@ -220,13 +220,20 @@ export default function App() {
 
   const sendTg = async msg => {
     if (readOnly) return;
-    if (!settings.botToken || !settings.chatId) { setTgStatus("❌ Bot token or Chat ID missing. Go to Settings."); return; }
+    // Preferred path: Cloudflare Worker proxy (see cloudflare/) keeps the bot
+    // token server-side. Legacy fallback: direct call when only a token is set.
+    const proxyUrl = (settings.tgProxyUrl || "").trim().replace(/\/+$/, "");
+    const hasLegacyToken = Boolean(settings.botToken && settings.chatId);
+    if (!proxyUrl && !hasLegacyToken) { setTgStatus("❌ Set a Proxy URL (recommended) or Bot token in Settings."); return; }
+    if (!settings.chatId) { setTgStatus("❌ Chat ID missing. Go to Settings."); return; }
     setTgStatus("⏳ Sending...");
+    const body = JSON.stringify({ chat_id:settings.chatId, text:msg, parse_mode:"Markdown" });
+    const opts = { method:"POST", headers:{"Content-Type":"application/json" }, body };
     try {
-      const r = await fetch(`https://api.telegram.org/bot${settings.botToken}/sendMessage`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ chat_id:settings.chatId, text:msg, parse_mode:"Markdown" }) });
-      const d = await r.json();
-      setTgStatus(d.ok ? "✅ Sent!" : `❌ ${d.description}`);
-    } catch { setTgStatus("❌ Network error — works fine on your Ubuntu server."); }
+      const r = await fetch(proxyUrl ? `${proxyUrl}/send` : `https://api.telegram.org/bot${settings.botToken}/sendMessage`, opts);
+      const d = await r.json().catch(() => null);
+      setTgStatus(d?.ok ? "✅ Sent!" : `❌ ${d?.description || `HTTP ${r.status}`}`);
+    } catch { setTgStatus("❌ Network error — check the Proxy URL or your connection."); }
   };
 
   const sendDaily = () => sendTg(buildTelegram(dayAge, nBirds, tasks, feed));
@@ -267,7 +274,8 @@ export default function App() {
   // Schedule the daily Telegram send as a self-re-arming timer (an external
   // subscription), instead of checking the clock synchronously in an effect.
   useEffect(() => {
-    if (!settings.botToken || !settings.chatId || !settings.setupDone) return undefined;
+    // Proxy-only setups have no botToken in the browser — chatId is the real gate.
+    if ((!settings.tgProxyUrl && !settings.botToken) || !settings.chatId || !settings.setupDone) return undefined;
     const [h, m] = settings.notifyTime.split(":").map(Number);
     if (!Number.isInteger(h) || !Number.isInteger(m) || h < 0 || h > 23 || m < 0 || m > 59) return undefined;
 
@@ -288,7 +296,7 @@ export default function App() {
     }, msUntilNext(new Date()));
 
     return () => clearTimeout(timer);
-  }, [settings.botToken, settings.chatId, settings.notifyTime, settings.setupDone]);
+  }, [settings.tgProxyUrl, settings.botToken, settings.chatId, settings.notifyTime, settings.setupDone]);
 
   const saveS = patch => { const s = {...settings, ...patch}; setSettings(s); persist(s); };
   const finishSetup = () => { const s = {...temp, setupDone:true, startDate:toDateInputValue()}; setSettings(s); persist(s); setScreen(cages.length ? "dashboard" : "cagegate"); };
@@ -403,13 +411,13 @@ export default function App() {
             <div>
               <div style={{ color:"#FFB74D", fontSize:15, fontWeight:"bold", marginBottom:8 }}>📱 Telegram Setup</div>
               <div style={{ background:"rgba(255,183,77,0.1)", border:"1px solid rgba(255,183,77,0.3)", borderRadius:10, padding:"12px 14px", marginBottom:16 }}>
-                {["Open Telegram → search @BotFather","Send /newbot → choose a name","Copy the API token","Search @userinfobot → send any msg → copy Chat ID","Paste both below 👇"].map((s,i)=>(
+                {["Deploy the Telegram proxy (cloudflare/) and paste its URL below — the token stays on the server","Or skip the proxy: get a token from @BotFather (/newbot) pasted directly here","Search @userinfobot → send any msg → copy Chat ID","Paste the Chat ID below 👇"].map((s,i)=>(
                   <div key={i} style={{ color:"rgba(255,255,255,0.75)", fontSize:11.5, marginBottom:4, display:"flex", gap:8 }}>
                     <span style={{ color:"#E87722", fontWeight:"bold", minWidth:16 }}>{i+1}.</span>{s}
                   </div>
                 ))}
               </div>
-              {[{label:"Bot Token",key:"botToken",ph:"123456:ABCdef..."},{label:"Chat ID",key:"chatId",ph:"123456789"}].map(f=>(
+              {[{label:"Proxy URL (recommended — keeps the bot token off this device)",key:"tgProxyUrl",ph:"https://bv380-telegram-proxy.<account>.workers.dev"},{label:"Bot Token (legacy direct mode)",key:"botToken",ph:"123456:ABCdef..."},{label:"Chat ID",key:"chatId",ph:"123456789"}].map(f=>(
                 <div key={f.key} style={{ marginBottom:14 }}>
                   <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginBottom:6 }}>{f.label}</div>
                   <input type="text" placeholder={f.ph} value={temp[f.key]} onChange={e=>setTemp(p=>({...p,[f.key]:e.target.value}))}
@@ -427,7 +435,7 @@ export default function App() {
           {step === 3 && (
             <div>
               <div style={{ color:"#FFB74D", fontSize:15, fontWeight:"bold", marginBottom:16 }}>✅ Ready to start!</div>
-              {[["🐔 Birds",`${temp.numBirds} BV-380 hens`],["📅 Age",`Day ${temp.chickenAge}`],["🌾 Feed",getFeed(temp.chickenAge||25).feedType],["⏰ Alert",`${temp.notifyTime} IST daily`],["📱 Telegram",temp.botToken&&temp.chatId?"✅ Configured":"⚠️ Not set"]].map(([k,v])=>(
+              {[["🐔 Birds",`${temp.numBirds} BV-380 hens`],["📅 Age",`Day ${temp.chickenAge}`],["🌾 Feed",getFeed(temp.chickenAge||25).feedType],["⏰ Alert",`${temp.notifyTime} IST daily`],["📱 Telegram",(temp.tgProxyUrl||temp.botToken)&&temp.chatId?"✅ Configured":"⚠️ Not set"]].map(([k,v])=>(
                 <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
                   <span style={{ color:"rgba(255,255,255,0.6)", fontSize:13 }}>{k}</span>
                   <span style={{ color:"white", fontSize:13, fontWeight:"bold" }}>{v}</span>
@@ -1190,10 +1198,10 @@ export default function App() {
             <div style={{ background:"rgba(0,136,204,0.08)", border:"1px solid rgba(0,136,204,0.3)", borderRadius:12, padding:16, marginBottom:16 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
                 <div style={{ fontSize:12, color:"#90CAF9", letterSpacing:2 }}>📱 TELEGRAM</div>
-                {settings.botToken && settings.chatId && <div style={{ fontSize:11, color:"#81C784", background:"rgba(46,125,50,0.2)", padding:"2px 10px", borderRadius:10 }}>✅ Saved</div>}
+                {(settings.tgProxyUrl || settings.botToken) && settings.chatId && <div style={{ fontSize:11, color:"#81C784", background:"rgba(46,125,50,0.2)", padding:"2px 10px", borderRadius:10 }}>✅ Saved</div>}
               </div>
-              <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginBottom:12 }}>Credentials are saved automatically as you type — you only need to enter these once.</div>
-              {[{label:"Bot Token",key:"botToken",ph:"123456:ABCdef..."},{label:"Chat ID",key:"chatId",ph:"123456789"}].map(f=>(
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginBottom:12 }}>Saved automatically as you type. With a Proxy URL set, the bot token never leaves the server — see <b>cloudflare/README.md</b>.</div>
+              {[{label:"Proxy URL (recommended)",key:"tgProxyUrl",ph:"https://bv380-telegram-proxy.<account>.workers.dev"},{label:"Bot Token (legacy direct mode)",key:"botToken",ph:"123456:ABCdef..."},{label:"Chat ID",key:"chatId",ph:"123456789"}].map(f=>(
                 <div key={f.key} style={{ marginBottom:12 }}>
                   <div style={{ fontSize:12, color:"rgba(255,255,255,0.6)", marginBottom:6 }}>{f.label}</div>
                   <input type="text" placeholder={f.ph} value={settings[f.key]||""} disabled={readOnly} onChange={async e=>{ await saveS({[f.key]:e.target.value}); setTemp(p=>({...p,[f.key]:e.target.value})); }}
@@ -1259,7 +1267,7 @@ export default function App() {
             <div style={{ background:"rgba(255,183,77,0.08)", border:"1px solid rgba(255,183,77,0.2)", borderRadius:12, padding:14, marginTop:16 }}>
               <div style={{ fontSize:12, color:"#FFB74D", fontWeight:"bold", marginBottom:8 }}>ℹ️ How Notifications Work</div>
               <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", lineHeight:1.8 }}>
-                • Bot Token &amp; Chat ID are saved permanently to your device<br/>
+                • Chat ID (and proxy URL) are saved permanently to your device — with a proxy, the bot token stays on the server<br/>
                 • App auto-sends at your set time every day<br/>
                 • <b style={{ color:"rgba(255,255,255,0.7)" }}>Keep this tab open</b> for browser auto-send to work<br/>
                 • The Node.js bot on your Ubuntu server sends 24/7 independently<br/>

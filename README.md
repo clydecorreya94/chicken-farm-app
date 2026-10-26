@@ -22,6 +22,15 @@ A React + Vite single-page app for managing a small chicken farm from phone or d
 
 Admin can edit and reset data. Guest can view the UI but cannot modify records.
 
+## Security Notes
+
+These are known, accepted trade-offs of the current no-backend design (LAN-only deployment):
+
+- **Login accounts are client-side and stored in plaintext in the source.** There is no server to validate them, so they only gate the UI — anyone with the bundle can read them. Treat the app as a single-user tool behind your LAN, not as real authentication.
+- **The Telegram bot token should never live in the browser.** Configure a **Proxy URL** in Settings → 📱 Telegram pointing at the Cloudflare Worker in `cloudflare/`; it holds the token as an encrypted secret and exposes only `POST /send`. See `cloudflare/README.md` to deploy it.
+- **Legacy fallback:** if only a Bot Token is set (no proxy), the app calls `api.telegram.org` directly and the token sits in `localStorage`. Rotate the token with @BotFather if it was ever entered on a shared device.
+- All farm data stays in this browser's `localStorage`; nothing is sent anywhere except Telegram messages.
+
 ## Important Storage Limitation
 
 This app currently stores data in browser `localStorage`.
@@ -68,6 +77,7 @@ npm run preview
 
 - `src/App.jsx`: main application logic, UI, shared state, auth gate, and finance flow
 - `src/main.jsx`: app entry point
+- `cloudflare/`: Cloudflare Worker that proxies Telegram sends so the bot token stays server-side
 - `deploy.sh`: rebuilds the app and redeploys the production files to the nginx web root
 - `public/`: static assets
 
