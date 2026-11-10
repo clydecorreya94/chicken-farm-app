@@ -1,6 +1,6 @@
 # Project Memory — Chicken Farm App (BV380 Farm Manager)
 
-_Last updated: 2026-10-26_
+_Last updated: 2026-11-10_
 
 ## Profile
 
@@ -17,6 +17,12 @@ _Last updated: 2026-10-26_
 - `npm run lint` (eslint .) — **clean, 0 errors 0 warnings** (as of 2026-10-26).
 - `npm run build` — passes; main chunk 334 kB (97 kB gzip) + lazy tab chunks.
 - No test suite in repo. Ad-hoc Worker smoke test (Node, stubbed `fetch`, 7 checks) was run once for `cloudflare/worker.js`; file was temporary and not committed.
+
+## Session state (2026-11-10)
+
+- Backlog **#8 (CI half)** drafted but **not committed**: `.github/workflows/ci.yml` (push to `main` + PRs, Node 22 + `npm ci` cache, `npm run lint`, `npm run build`) exists untracked on disk and was verified locally — lint exit 0, build exit 0 (334 kB main chunk, unchanged), YAML parses with one `verify` job / 5 steps. Pushing it over HTTPS with the current PAT fails: `refusing to allow a Personal Access Token to create or update workflow .github/workflows/ci.yml without workflow scope`. Unblock by adding the `workflow` scope to the token, or push over SSH (the restriction only applies to HTTPS + PAT).
+- Repo was at `origin/main` = `92c32d4` at session start. Push attempts from this session fail for lack of credentials (`could not read Username for 'https://github.com'`, no helper, no `GH_TOKEN`); user pushes manually.
+- Out of scope this session, still open: `deploy.sh` hardcoded `APP_ROOT` + non-atomic `rm -rf` copy → needs nginx root change under sudo and a live deploy to verify.
 
 ## Session state (2026-10-26)
 
@@ -41,6 +47,4 @@ Partially done:
 
 6. PWA + error boundary + a11y shipped (`20004c1`); **local `Notification` API fallback not implemented**.
 
-Open:
-
-8. CI (lint + build workflow); `deploy.sh` hardcoded path and non-atomic `rm -rf` copy → symlink swap.
+8. CI (lint + build workflow) — written and verified but **uncommitted** at `.github/workflows/ci.yml`, blocked on the PAT `workflow` scope; `deploy.sh` hardcoded path and non-atomic `rm -rf` copy → symlink swap still **open**.
